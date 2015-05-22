@@ -11,9 +11,12 @@ $(function() {
   var $window = $(window);
   var $usernameInput = $('.usernameInput'); // Input for username
   var $messages = $('.messages'); // Messages area
+  var $participants = $('.participants');
+  var $participantsCount = $('.participants-count');
+  var $participantsList = $('.participants-list');
   var $inputMessage = $('.inputMessage'); // Input message input box
 
-  var $loginPage = $('.login.page'); // The login page
+  var $loginPage = $('.login.page'); // The d page
   var $chatPage = $('.chat.page'); // The chatroom page
 
   // Prompt for setting a username
@@ -27,12 +30,15 @@ $(function() {
 
   function addParticipantsMessage (data) {
     var message = '';
+
     if (data.numUsers === 1) {
-      message += "there's 1 participant";
+      message += 'There\'s 1 participant';
     } else {
-      message += "there are " + data.numUsers + " participants";
+      message += 'There are ' + data.numUsers + ' participants';
     }
-    log(message);
+
+    $participantsCount.html(message);
+    generateParticipantsList(data.users);
   }
 
   // Sets the client's username
@@ -142,6 +148,24 @@ $(function() {
       $messages.append($el);
     }
     $messages[0].scrollTop = $messages[0].scrollHeight;
+  }
+
+  // generate participants list
+  function generateParticipantsList (users) {
+    $participantsList.html('');
+    $.each(users, function (element) {
+      var $el = $('<li>').addClass('participant').text(element);
+
+      if (element == username) {
+        var $itsYouMsg = $('<span>', {
+          html: ' (it\'s you)'
+        });
+
+        $el.addClass('currentUser').append($itsYouMsg);
+      }
+
+      $participantsList.append($el);
+    });
   }
 
   // Prevents input from having injected markup
