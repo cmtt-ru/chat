@@ -121,10 +121,40 @@ ul {
   margin: 0;
   overflow-y: scroll;
   padding: 10px 20px 10px 20px;
+  width: 80%;
+  position: relative;
+  display: inline-block;
 }
 
 .message.typing .messageBody {
   color: gray;
+}
+
+.participants {
+  position: relative;
+  display: inline-block;
+  width: 20%;
+  float: right;
+  padding: 0;
+}
+
+.participants-count {
+  padding: 1rem;
+  background-color: #000;
+  color: #fff;
+  font-weight: bold;
+}
+
+.participant {
+  padding: 1rem 0 0 1rem;
+}
+
+.participant.currentUser {
+  font-weight: bold;
+}
+
+.participant.currentUser > span {
+  font-weight: normal !important;
 }
 
 .username {
