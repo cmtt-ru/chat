@@ -25,25 +25,28 @@ io.on('connection', function (socket) {
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
     // we tell the client to execute 'new message'
-    socket.broadcast.emit('new message', {
+    socket.broadcast.to(socket.room).emit('new message', {
       username: socket.username,
-      message: data
+      message: data,
+      room: socket.room
     });
   });
 
   // when the client emits 'add user', this listens and executes
-  socket.on('add user', function (username) {
+  socket.on('add user', function (data) {
     // we store the username in the socket session for this client
-    socket.username = username;
+    socket.username = data.username;
+    socket.room = data.room;
     // add the client's username to the global list
-    usernames[username] = username;
+    usernames[data.username] = data.username;
     ++numUsers;
     addedUser = true;
+    socket.join(data.room);
     socket.emit('login', {
       numUsers: numUsers
     });
     // echo globally (all clients) that a person has connected
-    socket.broadcast.emit('user joined', {
+    socket.broadcast.to(socket.room).emit('user joined', {
       username: socket.username,
       numUsers: numUsers
     });

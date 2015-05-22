@@ -10,6 +10,7 @@ $(function() {
   // Initialize varibles
   var $window = $(window);
   var $usernameInput = $('.usernameInput'); // Input for username
+  //var $roomInput = $('input:radio[name=room]'); // Input for room
   var $messages = $('.messages'); // Messages area
   var $inputMessage = $('.inputMessage'); // Input message input box
 
@@ -18,6 +19,7 @@ $(function() {
 
   // Prompt for setting a username
   var username;
+  var room;
   var connected = false;
   var typing = false;
   var lastTypingTime;
@@ -38,6 +40,7 @@ $(function() {
   // Sets the client's username
   function setUsername () {
     username = cleanInput($usernameInput.val().trim());
+    room = cleanInput($('input:radio[name=room]:checked').val());
 
     // If the username is valid
     if (username) {
@@ -47,7 +50,7 @@ $(function() {
       $currentInput = $inputMessage.focus();
 
       // Tell the server your username
-      socket.emit('add user', username);
+      socket.emit('add user', {username: username, room: room});
     }
   }
 
@@ -61,7 +64,8 @@ $(function() {
       $inputMessage.val('');
       addChatMessage({
         username: username,
-        message: message
+        message: message,
+        room: room
       });
       // tell server to execute 'new message' and send along one parameter
       socket.emit('new message', message);
@@ -85,7 +89,7 @@ $(function() {
     }
 
     var $usernameDiv = $('<span class="username"/>')
-      .text(data.username)
+      .text(data.username + ' ' + data.room)
       .css('color', getUsernameColor(data.username));
     var $messageBodyDiv = $('<span class="messageBody">')
       .text(data.message);

@@ -76,14 +76,19 @@ ul {
   font-size: 200%;
 }
 
-.login.page .usernameInput {
+.login.page .usernameInput, label {
   font-size: 200%;
   letter-spacing: 3px;
 }
 
-.login.page .title, .login.page .usernameInput {
+.login.page .title, .login.page .usernameInput, label {
   color: #fff;
   font-weight: 100;
+}
+
+input[type="radio"] {
+  margin-top: -1px;
+  vertical-align: middle;
 }
 
 /* Chat page */
