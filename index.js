@@ -56,12 +56,14 @@ io.on('connection', function (socket) {
     addedUser = true;
     socket.join(data.room);
     socket.emit('login', {
-      numUsers: numUsers
+      numUsers: numUsers,
+      users: usernames
     });
     // echo globally (all clients) that a person has connected
     socket.broadcast.to(socket.room).emit('user joined', {
       username: socket.username,
-      numUsers: numUsers
+      numUsers: numUsers,
+      users: usernames
     });
   });
 
