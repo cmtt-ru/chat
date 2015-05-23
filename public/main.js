@@ -248,6 +248,18 @@ $(function() {
   });
 
   // Socket events
+  socket.on('connect', function(){
+      var userData = {
+        name: 'User Name',
+        image: 'https://static39.cmtt.ru/paper-preview-fox/m/us/musk-longread-1/1bce7f668558-normal.jpg'
+      };
+
+      socket.emit('authentication', { user: userData, hash: '4f6a18ebb0f89ff53e5d7626e02530cb' });
+  });
+
+  socket.on('authenticated', function (data) {
+    alert('authenticated');
+  });
 
   // Whenever the server emits 'login', log the login message
   socket.on('login', function (data) {

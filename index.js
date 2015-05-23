@@ -6,6 +6,41 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 
+var crypto = require('crypto');
+require('socketio-auth')(io, {
+  authenticate: authenticate,
+  postAuthenticate: postAuthenticate,
+  timeout: 1000
+});
+
+/**
+ * Процедура аутентификации пользователя
+ *
+ */
+function authenticate(data, callback) {
+    var userData = data.user;
+    var md5 = crypto.createHash('md5');
+    var salt = 'euc3Karc4uN9yEk9vA';
+    var result = false;
+
+    if (md5.update(JSON.stringify(userData)).update(salt).digest('hex') === data.hash) {
+        result = true;
+    }
+
+    return callback(null, result);
+}
+
+/**
+ * Обработка авторизационных данных после успешной аутентификации
+ *
+ */
+function postAuthenticate(socket, data) {
+    var userData = data.user;
+
+    socket.client.user = userData;
+    socket.username = userData.name;
+}
+
 server.listen(port, function () {
   console.log('Server listening at port %d', port);
 });
@@ -34,9 +69,9 @@ io.on('connection', function (socket) {
   // when the client emits 'add user', this listens and executes
   socket.on('add user', function (username) {
     // we store the username in the socket session for this client
-    socket.username = username;
+    socket.username = socket.username || username;
     // add the client's username to the global list
-    usernames[username] = username;
+    usernames[username] = socket.username;
     ++numUsers;
     addedUser = true;
     socket.emit('login', {
