@@ -7,6 +7,8 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 var config = require('./config');
+var Room = require('./js/room');
+var helper = require('./js/helper');
 
 // Check for config availability
 
@@ -56,46 +58,8 @@ server.listen(port, function () {
 // Routing
 app.use(express.static(__dirname + '/public'));
 
-// Chatroom
-
-// usernames which are currently connected to the chat
-
+// Chatrooms
 var rooms = {};
-
-// Get users in the room
-function getRoomsUsers(room) {
-  return rooms[room].users;
-}
-
-function getRoomsUsersCount(room) {
-  return rooms[room].numUsers;
-}
-
-function roomInitialize(room) {
-  rooms[room] = {
-    users: {},
-    history: [],
-    numUsers: 0
-  };
-}
-
-function roomAddToHistory(room, user, data) {
-  rooms[room].history.push({message: data, user: user});
-  if (rooms[room].history.length > 30) {
-      history.shift();
-  }
-}
-
-/**
- * Чистим название комнаты от посторонних символов
- *
- * @param  string name
- *
- * @return string
- */
-function roomNameNormilize(name) {
-  return name.replace(/[^a-z0-9-]/ig, '');
-}
 
 /**
  * Проверяем доступ пользователя к комнате
@@ -121,7 +85,7 @@ io.on('connection', function (socket) {
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
-    roomAddToHistory(socket.room, socket.user, data);
+    rooms[socket.room].addToHistory(socket.user, data);
 
     socket.broadcast.to(socket.room).emit('new message', {
       user: socket.user,
@@ -133,7 +97,7 @@ io.on('connection', function (socket) {
   // when the client emits 'add user', this listens and executes
   socket.on('add user', function (data) {
     // normilize room name
-    var room = roomNameNormilize(data.room);
+    var room = helper.roomNameNormilize(data.room);
 
     // check access
     if (room.length === 0 || !checkRoomAuthorization(room, data.roomHash)) {
@@ -151,7 +115,8 @@ io.on('connection', function (socket) {
 
     // Init room
     if (rooms[room] == undefined) {
-        roomInitialize(room);
+        rooms[room] = new Room(room);
+
     }
 
     rooms[room].users[socket.user.id] = socket.user;
@@ -162,27 +127,19 @@ io.on('connection', function (socket) {
     socket.join(room);
 
     socket.emit('login', {
-      numUsers: getRoomsUsersCount(room),
-      users: getRoomsUsers(room)
+      numUsers: rooms[room].getUsersCount(),
+      users: rooms[room].getUsers()
     });
 
     // echo to room that a person has connected
     socket.broadcast.to(socket.room).emit('user joined', {
       user: socket.user,
-      numUsers: getRoomsUsersCount(room),
-      users: getRoomsUsers(room)
+      numUsers: rooms[room].getUsersCount(),
+      users: rooms[room].getUsers()
     });
 
     // History of last messages in chat
-    if (rooms[room].history.length > 0) {
-      rooms[room].history.forEach(function(data) {
-        socket.emit('new message', {
-          user: data.user,
-          message: data.message,
-          room: room
-        });
-      });
-    }
+    rooms[socket.room].sendHistory(socket);
   });
 
   // when the client emits 'typing', we broadcast it to others
@@ -208,8 +165,8 @@ io.on('connection', function (socket) {
       // echo to the room that this client has left
       socket.broadcast.to(socket.room).emit('user left', {
         user: socket.user,
-        numUsers: getRoomsUsersCount(socket.room),
-        users: getRoomsUsers(socket.room)
+      numUsers: rooms[socket.room].getUsersCount(),
+      users: rooms[socket.room].getUsers()
       });
     }
   });

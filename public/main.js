@@ -102,7 +102,7 @@ $(function() {
     }
 
     var $usernameDiv = $('<span class="username"/>')
-      .text(data.user.name + ' ' + data.room)
+      .text(data.user.name)
       .css('color', getUsernameColor(data.user.name));
     var $messageBodyDiv = $('<span class="messageBody">')
       .text(data.message);
