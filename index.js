@@ -64,6 +64,21 @@ function getRoomsUsersCount(room) {
   return rooms[room].numUsers;
 }
 
+function roomInitialize(room) {
+  rooms[room] = {
+    users: {},
+    history: [],
+    numUsers: 0
+  };
+}
+
+function roomAddToHistory(room, user, data) {
+  rooms[room].history.push({message: data, user: user});
+  if (rooms[room].history.length > 30) {
+      history.shift();
+  }
+}
+
 /**
  * Чистим название комнаты от посторонних символов
  *
@@ -99,7 +114,8 @@ io.on('connection', function (socket) {
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
-    // we tell the client to execute 'new message'
+    roomAddToHistory(socket.room, socket.user, data);
+
     socket.broadcast.to(socket.room).emit('new message', {
       user: socket.user,
       message: data,
@@ -128,7 +144,7 @@ io.on('connection', function (socket) {
 
     // Init room
     if (rooms[room] == undefined) {
-        rooms[room] = { users: {}, numUsers: 0 };
+        roomInitialize(room);
     }
 
     rooms[room].users[socket.user.id] = socket.user;
@@ -149,6 +165,17 @@ io.on('connection', function (socket) {
       numUsers: getRoomsUsersCount(room),
       users: getRoomsUsers(room)
     });
+
+    // History of last messages in chat
+    if (rooms[room].history.length > 0) {
+      rooms[room].history.forEach(function(data) {
+        socket.emit('new message', {
+          user: data.user,
+          message: data.message,
+          room: room
+        });
+      });
+    }
   });
 
   // when the client emits 'typing', we broadcast it to others
