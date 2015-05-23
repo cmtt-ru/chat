@@ -30,15 +30,12 @@ $(function() {
 
   var socket = io();
 
-  function setRoomList(data) {
-    var roomList = $('.roomList');
-    $.each(data, function(element) {
-      var $label = $('<label>').text(element);
-      var $input = $('<input type="radio">').attr({name:'room',value:element});
-      $input.appendTo($label); 
-      roomList.append($label);
-    });
-  }
+  var id = Math.floor(Math.random() * (9999 - 1 + 1)) + 1;
+  var userData = {
+    id: id,
+    name: 'User #' + id,
+    image: 'https://static39.cmtt.ru/paper-preview-fox/m/us/musk-longread-1/1bce7f668558-normal.jpg'
+  };
 
   function addParticipantsMessage (data) {
     var message = '';
@@ -56,7 +53,7 @@ $(function() {
   // Sets the client's username
   function setUsername () {
     username = cleanInput($usernameInput.val().trim());
-    room = cleanInput($('input:radio[name=room]:checked').val());
+    room = 'room1';
 
     // If the username is valid
     if (username) {
@@ -66,7 +63,7 @@ $(function() {
       $currentInput = $inputMessage.focus();
 
       // Tell the server your username
-      socket.emit('add user', {username: username, room: room, roomHash: 'd3bdb69348a7fde810da2915cc52645a'});
+      socket.emit('add user', {room: room, roomHash: 'd3bdb69348a7fde810da2915cc52645a'});
     }
   }
 
@@ -79,7 +76,7 @@ $(function() {
     if (message && connected) {
       $inputMessage.val('');
       addChatMessage({
-        username: username,
+        user: userData,
         message: message,
         room: room
       });
@@ -105,14 +102,14 @@ $(function() {
     }
 
     var $usernameDiv = $('<span class="username"/>')
-      .text(data.username + ' ' + data.room)
-      .css('color', getUsernameColor(data.username));
+      .text(data.user.name + ' ' + data.room)
+      .css('color', getUsernameColor(data.user.name));
     var $messageBodyDiv = $('<span class="messageBody">')
       .text(data.message);
 
     var typingClass = data.typing ? 'typing' : '';
     var $messageDiv = $('<li class="message"/>')
-      .data('username', data.username)
+      .data('username', data.user.name)
       .addClass(typingClass)
       .append($usernameDiv, $messageBodyDiv);
 
@@ -167,8 +164,8 @@ $(function() {
   // generate participants list
   function generateParticipantsList (users) {
     $participantsList.html('');
-    $.each(users, function (element) {
-      var $el = $('<li>').addClass('participant').text(element);
+    $.each(users, function (id, element) {
+      var $el = $('<li>').addClass('participant').html('<img src="'+element.image+'" width=20 height=20>').append(' ' + element.name);
 
       if (element == username) {
         var $itsYouMsg = $('<span>', {
@@ -210,7 +207,7 @@ $(function() {
   // Gets the 'X is typing' messages of a user
   function getTypingMessages (data) {
     return $('.typing.message').filter(function (i) {
-      return $(this).data('username') === data.username;
+      return $(this).data('username') === data.user.name;
     });
   }
 
@@ -263,61 +260,48 @@ $(function() {
 
   // Socket events
   socket.on('connect', function(){
-      var userData = {
-        id: 1,
-        name: 'User Name',
-        image: 'https://static39.cmtt.ru/paper-preview-fox/m/us/musk-longread-1/1bce7f668558-normal.jpg'
-      };
-
-      socket.emit('authentication', { user: userData, hash: '3b98c4299effc2ea3418412034cbcc6c' });
+      socket.emit('authentication', { user: userData, hash: md5(JSON.stringify(userData) + 'euc3Karc4uN9yEk9vA') });
   });
 
   socket.on('authenticated', function (data) {
-    alert('authenticated');
-  });
+      // Whenever the server emits 'login', log the login message
+      socket.on('login', function (data) {
+        connected = true;
+        // Display the welcome message
+        var message = "Welcome to Socket.IO Chat – ";
+        log(message, {
+          prepend: true
+        });
+        addParticipantsMessage(data);
+      });
 
-  // Get list of rooms
-  socket.on('room list', function(data){
-    setRoomList(data);
-  });
+      // Whenever the server emits 'new message', update the chat body
+      socket.on('new message', function (data) {
+        addChatMessage(data);
+      });
 
-  // Whenever the server emits 'login', log the login message
-  socket.on('login', function (data) {
-    connected = true;
-    // Display the welcome message
-    var message = "Welcome to Socket.IO Chat – ";
-    log(message, {
-      prepend: true
-    });
-    addParticipantsMessage(data);
-  });
+      // Whenever the server emits 'user joined', log it in the chat body
+      socket.on('user joined', function (data) {
+        log(data.user.name + ' joined');
+        addParticipantsMessage(data);
+      });
 
-  // Whenever the server emits 'new message', update the chat body
-  socket.on('new message', function (data) {
-    addChatMessage(data);
-  });
+      // Whenever the server emits 'user left', log it in the chat body
+      socket.on('user left', function (data) {
+        log(data.user.name + ' left');
+        addParticipantsMessage(data);
+        removeChatTyping(data);
+      });
 
-  // Whenever the server emits 'user joined', log it in the chat body
-  socket.on('user joined', function (data) {
-    log(data.username + ' joined');
-    addParticipantsMessage(data);
-  });
+      // Whenever the server emits 'typing', show the typing message
+      socket.on('typing', function (data) {
+        addChatTyping(data);
+      });
 
-  // Whenever the server emits 'user left', log it in the chat body
-  socket.on('user left', function (data) {
-    log(data.username + ' left');
-    addParticipantsMessage(data);
-    removeChatTyping(data);
-  });
-
-  // Whenever the server emits 'typing', show the typing message
-  socket.on('typing', function (data) {
-    addChatTyping(data);
-  });
-
-  // Whenever the server emits 'stop typing', kill the typing message
-  socket.on('stop typing', function (data) {
-    removeChatTyping(data);
+      // Whenever the server emits 'stop typing', kill the typing message
+      socket.on('stop typing', function (data) {
+        removeChatTyping(data);
+      });
   });
 
   // Whenever the server emits 'stop typing', kill the typing message
