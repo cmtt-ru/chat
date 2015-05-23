@@ -167,7 +167,7 @@ $(function() {
     $.each(users, function (id, element) {
       var $el = $('<li>').addClass('participant').html('<img src="'+element.image+'" width=20 height=20>').append(' ' + element.name);
 
-      if (element == username) {
+      if (element.id == userData.id) {
         var $itsYouMsg = $('<span>', {
           html: ' (it\'s you)'
         });
