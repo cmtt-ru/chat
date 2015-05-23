@@ -19,16 +19,16 @@ require('socketio-auth')(io, {
  *
  */
 function authenticate(data, callback) {
-    var userData = data.user;
-    var md5 = crypto.createHash('md5');
-    var salt = 'euc3Karc4uN9yEk9vA';
-    var result = false;
+  var userData = data.user;
+  var md5 = crypto.createHash('md5');
+  var salt = 'euc3Karc4uN9yEk9vA';
+  var result = false;
 
-    if (md5.update(JSON.stringify(userData)).update(salt).digest('hex') === data.hash) {
-        result = true;
-    }
+  if (md5.update(JSON.stringify(userData)).update(salt).digest('hex') === data.hash) {
+    result = true;
+  }
 
-    return callback(null, result);
+  return callback(null, result);
 }
 
 /**
@@ -36,10 +36,10 @@ function authenticate(data, callback) {
  *
  */
 function postAuthenticate(socket, data) {
-    var userData = data.user;
+  var userData = data.user;
 
-    socket.user = userData;
-    socket.username = userData.name;
+  socket.user = userData;
+  socket.username = userData.name;
 }
 
 server.listen(port, function () {
@@ -72,7 +72,7 @@ function getRoomsUsersCount(room) {
  * @return string
  */
 function roomNameNormilize(name) {
-    return name.replace(/[^a-z0-9-]/ig, '');
+  return name.replace(/[^a-z0-9-]/ig, '');
 }
 
 /**
@@ -84,14 +84,14 @@ function roomNameNormilize(name) {
  * @return boolean
  */
 function checkRoomAuthorization(name, hash) {
-    var md5 = crypto.createHash('md5');
-    var salt = 'euc3Karc4uN9yEk9vA';
+  var md5 = crypto.createHash('md5');
+  var salt = 'euc3Karc4uN9yEk9vA';
 
-    if (md5.update(name).update(salt).digest('hex') === hash) {
-        return true;
-    }
+  if (md5.update(name).update(salt).digest('hex') === hash) {
+    return true;
+  }
 
-    return false;
+  return false;
 }
 
 io.on('connection', function (socket) {
