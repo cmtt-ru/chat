@@ -30,11 +30,11 @@ $(function() {
 
   var socket = io();
 
-  function setRoomList(data){
+  function setRoomList(data) {
     var roomList = $('.roomList');
-    $.each(data, function(i,e){
-      var $label = $('<label>').text(e);
-      var $input = $('<input type="radio">').attr({name:'room',value:e});
+    $.each(data, function(element) {
+      var $label = $('<label>').text(element);
+      var $input = $('<input type="radio">').attr({name:'room',value:element});
       $input.appendTo($label); 
       roomList.append($label);
     });

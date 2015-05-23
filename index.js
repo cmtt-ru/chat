@@ -21,10 +21,24 @@ var users = {};
 var rooms = {};
 
 // Some test rooms
-rooms['room1'] = 'room1';
-rooms['room2'] = 'room2';
-rooms['room3'] = 'room3';
+rooms['room1'] = { name:'room1', users:{} };
+rooms['room2'] = { name:'room2', users:{} };
+rooms['room3'] = { name:'room3', users:{} };
 
+// Generate room list
+function getRoomList() {
+  var roomList = {};
+  for (var room in rooms) {
+    var r = rooms[room];
+    roomList[r.name] = r.name;
+  }
+  return roomList;
+}
+
+// Get users in the room
+function getRoomsUsers(room) {
+  return rooms[room].users;
+}
 
 var usernames = {};
 var numUsers = 0;
@@ -33,7 +47,7 @@ io.on('connection', function (socket) {
   var addedUser = false;
 
   // Send room list to every new socket
-  socket.emit('room list', rooms);
+  socket.emit('room list', getRoomList());
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
@@ -53,23 +67,25 @@ io.on('connection', function (socket) {
     // add the client's username to the global list
     usernames[data.username] = data.username;
     ++numUsers;
+    // add the client's username to the rooom list
+    rooms[data.room].users[data.username] = data.username;
     addedUser = true;
     socket.join(data.room);
     socket.emit('login', {
       numUsers: numUsers,
-      users: usernames
+      users: getRoomsUsers(socket.room)
     });
-    // echo globally (all clients) that a person has connected
+    // echo to room that a person has connected
     socket.broadcast.to(socket.room).emit('user joined', {
       username: socket.username,
       numUsers: numUsers,
-      users: usernames
+      users: getRoomsUsers(socket.room)
     });
   });
 
   // when the client emits 'typing', we broadcast it to others
   socket.on('typing', function () {
-    socket.broadcast.emit('typing', {
+    socket.broadcast.to(socket.room).emit('typing', {
       username: socket.username
     });
   });
@@ -86,9 +102,10 @@ io.on('connection', function (socket) {
     // remove the username from global usernames list
     if (addedUser) {
       delete usernames[socket.username];
+      delete rooms[socket.room].users[socket.username];
       --numUsers;
 
-      // echo globally that this client has left
+      // echo to the room that this client has left
       socket.broadcast.to(socket.room).emit('user left', {
         username: socket.username,
         numUsers: numUsers
