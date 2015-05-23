@@ -306,4 +306,9 @@ $(function() {
   socket.on('stop typing', function (data) {
     removeChatTyping(data);
   });
+
+  // Whenever the server emits 'stop typing', kill the typing message
+  socket.on('auth failed', function (data) {
+    alert('Access denied');
+  });
 });
