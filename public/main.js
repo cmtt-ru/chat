@@ -27,6 +27,16 @@ $(function() {
 
   var socket = io();
 
+  function setRoomList(data){
+    var roomList = $('.roomList');
+    $.each(data, function(i,e){
+      var $label = $('<label>').text(e);
+      var $input = $('<input type="radio">').attr({name:'room',value:e});
+      $input.appendTo($label); 
+      roomList.append($label);
+    });
+  }
+
   function addParticipantsMessage (data) {
     var message = '';
     if (data.numUsers === 1) {
@@ -228,6 +238,11 @@ $(function() {
   });
 
   // Socket events
+
+  // Get list of rooms
+  socket.on('room list', function(data){
+    setRoomList(data);
+  });
 
   // Whenever the server emits 'login', log the login message
   socket.on('login', function (data) {

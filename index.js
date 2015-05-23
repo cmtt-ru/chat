@@ -16,11 +16,24 @@ app.use(express.static(__dirname + '/public'));
 // Chatroom
 
 // usernames which are currently connected to the chat
+
+var users = {};
+var rooms = {};
+
+// Some test rooms
+rooms['room1'] = 'room1';
+rooms['room2'] = 'room2';
+rooms['room3'] = 'room3';
+
+
 var usernames = {};
 var numUsers = 0;
 
 io.on('connection', function (socket) {
   var addedUser = false;
+
+  // Send room list to every new socket
+  socket.emit('room list', rooms);
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
@@ -61,7 +74,7 @@ io.on('connection', function (socket) {
 
   // when the client emits 'stop typing', we broadcast it to others
   socket.on('stop typing', function () {
-    socket.broadcast.emit('stop typing', {
+    socket.broadcast.to(socket.room).emit('stop typing', {
       username: socket.username
     });
   });
@@ -74,7 +87,7 @@ io.on('connection', function (socket) {
       --numUsers;
 
       // echo globally that this client has left
-      socket.broadcast.emit('user left', {
+      socket.broadcast.to(socket.room).emit('user left', {
         username: socket.username,
         numUsers: numUsers
       });
