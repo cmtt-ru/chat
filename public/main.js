@@ -262,6 +262,19 @@ $(function() {
   });
 
   // Socket events
+  socket.on('connect', function(){
+      var userData = {
+        id: 1,
+        name: 'User Name',
+        image: 'https://static39.cmtt.ru/paper-preview-fox/m/us/musk-longread-1/1bce7f668558-normal.jpg'
+      };
+
+      socket.emit('authentication', { user: userData, hash: '3b98c4299effc2ea3418412034cbcc6c' });
+  });
+
+  socket.on('authenticated', function (data) {
+    alert('authenticated');
+  });
 
   // Get list of rooms
   socket.on('room list', function(data){

@@ -7,6 +7,40 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 
+require('socketio-auth')(io, {
+  authenticate: authenticate,
+  postAuthenticate: postAuthenticate,
+  timeout: 1000
+});
+
+/**
+ * Процедура аутентификации пользователя
+ *
+ */
+function authenticate(data, callback) {
+    var userData = data.user;
+    var md5 = crypto.createHash('md5');
+    var salt = 'euc3Karc4uN9yEk9vA';
+    var result = false;
+
+    if (md5.update(JSON.stringify(userData)).update(salt).digest('hex') === data.hash) {
+        result = true;
+    }
+
+    return callback(null, result);
+}
+
+/**
+ * Обработка авторизационных данных после успешной аутентификации
+ *
+ */
+function postAuthenticate(socket, data) {
+    var userData = data.user;
+
+    socket.client.user = userData;
+    socket.username = userData.name;
+}
+
 server.listen(port, function () {
   console.log('Server listening at port %d', port);
 });
@@ -102,10 +136,10 @@ io.on('connection', function (socket) {
 
 
     // we store the username in the socket session for this client
-    socket.username = data.username;
+    socket.username = socket.username || data.username;
     socket.room = data.room;
     // add the client's username to the global list
-    usernames[data.username] = data.username;
+    usernames[socket.username] = socket.username;
     ++numUsers;
     // add the client's username to the rooom list
     rooms[data.room].users[data.username] = data.username;
