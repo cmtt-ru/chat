@@ -66,7 +66,7 @@ $(function() {
       $currentInput = $inputMessage.focus();
 
       // Tell the server your username
-      socket.emit('add user', {username: username, room: room});
+      socket.emit('add user', {username: username, room: room, roomHash: 'd3bdb69348a7fde810da2915cc52645a'});
     }
   }
 

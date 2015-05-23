@@ -2,6 +2,7 @@
 // Setup basic express server
 var express = require('express');
 var app = express();
+var crypto = require('crypto');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
@@ -40,6 +41,36 @@ function getRoomsUsers(room) {
   return rooms[room].users;
 }
 
+/**
+ * Чистим название комнаты от посторонних символов
+ *
+ * @param  string name
+ *
+ * @return string
+ */
+function roomNameNormilize(name) {
+    return name.replace(/[^a-z0-9-]/ig, '');
+}
+
+/**
+ * Проверяем доступ пользователя к комнате
+ *
+ * @param  string name
+ * @param  string hash
+ *
+ * @return boolean
+ */
+function checkRoomAuthorization(name, hash) {
+    var md5 = crypto.createHash('md5');
+    var salt = 'euc3Karc4uN9yEk9vA';
+
+    if (md5.update(name).update(salt).digest('hex') === hash) {
+        return true;
+    }
+
+    return false;
+}
+
 var usernames = {};
 var numUsers = 0;
 
@@ -61,6 +92,15 @@ io.on('connection', function (socket) {
 
   // when the client emits 'add user', this listens and executes
   socket.on('add user', function (data) {
+    // normilize room name
+    data.room = roomNameNormilize(data.room);
+
+    // check access
+    if (data.room.length === 0 || !checkRoomAuthorization(data.room, data.roomHash)) {
+        socket.emit('auth failed').disconnect('wrong room');
+    }
+
+
     // we store the username in the socket session for this client
     socket.username = data.username;
     socket.room = data.room;
