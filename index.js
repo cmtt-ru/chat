@@ -6,6 +6,13 @@ var crypto = require('crypto');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
+var config = require('./config');
+
+// Check for config availability
+
+if (!config) {
+  throw new Error("No configuration available. See config.example.js for example.");
+}
 
 // Auth module
 require('socketio-auth')(io, {
@@ -21,7 +28,7 @@ require('socketio-auth')(io, {
 function authenticate(data, callback) {
   var userData = data.user;
   var md5 = crypto.createHash('md5');
-  var salt = 'euc3Karc4uN9yEk9vA';
+  var salt = config.salt;
   var result = false;
 
   if (md5.update(JSON.stringify(userData)).update(salt).digest('hex') === data.hash) {
@@ -100,7 +107,7 @@ function roomNameNormilize(name) {
  */
 function checkRoomAuthorization(name, hash) {
   var md5 = crypto.createHash('md5');
-  var salt = 'euc3Karc4uN9yEk9vA';
+  var salt = config.salt;
 
   if (md5.update(name).update(salt).digest('hex') === hash) {
     return true;
