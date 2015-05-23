@@ -136,7 +136,7 @@ io.on('connection', function (socket) {
 
 
     // we store the username in the socket session for this client
-    socket.username = socket.username || data.username;
+    socket.username = data.username || socket.username;
     socket.room = data.room;
     // add the client's username to the global list
     usernames[socket.username] = socket.username;
@@ -182,7 +182,8 @@ io.on('connection', function (socket) {
       // echo to the room that this client has left
       socket.broadcast.to(socket.room).emit('user left', {
         username: socket.username,
-        numUsers: numUsers
+        numUsers: numUsers,
+		users: getRoomsUsers(socket.room)
       });
     }
   });
