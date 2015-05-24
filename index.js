@@ -66,12 +66,16 @@ io.on('connection', function (socket) {
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
+    var hash = crypto.createHash('md5');
+    hash = hash.update(data).digest('hex');
+
     rooms[socket.room].addToHistory(socket.user, data);
 
     socket.broadcast.to(socket.room).emit('new message', {
       user: socket.user,
       message: data,
-      room: socket.room
+      room: socket.room,
+      id: hash
     });
   });
 
