@@ -75,11 +75,7 @@ $(function() {
     // if there is a non-empty message and a socket connection
     if (message && connected) {
       $inputMessage.val('');
-      addChatMessage({
-        user: userData,
-        message: message,
-        room: room
-      });
+
       // tell server to execute 'new message' and send along one parameter
       socket.emit('new message', message);
     }
