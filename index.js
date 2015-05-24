@@ -96,6 +96,7 @@ io.on('connection', function (socket) {
         return false;
     }
 
+    if (socket.room) socket.leave(socket.room); // Prevent reading from multiple rooms
     socket.room = room;
 
     // If not authorized
