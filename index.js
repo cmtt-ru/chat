@@ -71,7 +71,7 @@ io.on('connection', function (socket) {
 
     rooms[socket.room].addToHistory(socket.user, data);
 
-    io.sockets.in(socket.room).emit('new message', {
+    io.to(socket.room).emit('new message', {
       user: socket.user,
       message: data,
       room: socket.room,
