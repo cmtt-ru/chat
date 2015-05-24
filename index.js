@@ -9,6 +9,7 @@ var port = process.env.PORT || 3000;
 var config = require('./config');
 var Room = require('./js/room');
 var helper = require('./js/helper');
+var command = require('./js/command');
 
 // Check for config availability
 
@@ -66,17 +67,22 @@ io.on('connection', function (socket) {
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
-    var hash = crypto.createHash('md5');
-    hash = hash.update(data).digest('hex');
+    // if message starts with '/' — we're not sending it to everyone, we're processing it in unique way
+    if (command.isCommand(data)) {
+      command.processCommand(data, socket);
+    } else {
+      var hash = crypto.createHash('md5');
+      hash = hash.update(data).digest('hex');
 
-    rooms[socket.room].addToHistory(socket.user, data);
+      rooms[socket.room].addToHistory(socket.user, data);
 
-    io.to(socket.room).emit('new message', {
-      user: socket.user,
-      message: data,
-      room: socket.room,
-      id: hash
-    });
+      io.to(socket.room).emit('new message', {
+        user: socket.user,
+        message: data,
+        room: socket.room,
+        id: hash
+      });
+    }
   });
 
   // when the client emits 'add user', this listens and executes
