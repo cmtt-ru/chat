@@ -26,6 +26,10 @@ function processCommand(data, socket) {
       responseCommand('echo', response, socket);
       break;
 
+    case 'durov':
+      responseCommand('durov', 'дуров позвонит', socket);
+      break;
+
     case 'ban':
       var response = '> /ban<br>' +
           'In development';
