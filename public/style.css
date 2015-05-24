@@ -135,6 +135,10 @@ input[type="radio"] {
   color: gray;
 }
 
+.commandBody {
+  color: gray;
+}
+
 .participants {
   position: relative;
   display: inline-block;
