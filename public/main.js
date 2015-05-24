@@ -79,15 +79,6 @@ $(function () {
     if (message && connected) {
       $inputMessage.val('');
 
-      // don't render message if it a command
-      if (message[0] !== '/') {
-        addChatMessage({
-          user: userData,
-          message: message,
-          room: room
-        });
-      }
-
       // tell server to execute 'new message' and send along one parameter
       socket.emit('new message', message);
     }
