@@ -61,25 +61,6 @@ app.use(express.static(__dirname + '/public'));
 // Chatrooms
 var rooms = {};
 
-/**
- * Проверяем доступ пользователя к комнате
- *
- * @param  string name
- * @param  string hash
- *
- * @return boolean
- */
-function checkRoomAuthorization(name, hash) {
-  var md5 = crypto.createHash('md5');
-  var salt = config.salt;
-
-  if (md5.update(name).update(salt).digest('hex') === hash) {
-    return true;
-  }
-
-  return false;
-}
-
 io.on('connection', function (socket) {
   var addedUser = false;
 
@@ -100,7 +81,7 @@ io.on('connection', function (socket) {
     var room = helper.roomNameNormilize(data.room);
 
     // check access
-    if (room.length === 0 || !checkRoomAuthorization(room, data.roomHash)) {
+    if (room.length === 0 || !helper.checkRoomAuthorization(room, config.salt, data.roomHash)) {
         socket.emit('auth failed').disconnect('wrong room');
         return false;
     }
