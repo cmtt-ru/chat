@@ -60,6 +60,7 @@ app.use(express.static(__dirname + '/public'));
 
 // Chatrooms
 var rooms = {};
+var flood = {};
 
 io.on('connection', function (socket) {
   var isAuthenticated = false;
@@ -76,6 +77,13 @@ io.on('connection', function (socket) {
       return true;
     }
 
+    if (flood[socket.user.id] >= 30) {
+      // ban
+
+
+      return false;
+    }
+
     var messageId = crypto.createHash('md5');
     messageId = messageId.update(data).digest('hex');
 
@@ -88,6 +96,12 @@ io.on('connection', function (socket) {
     io.to(socket.room).emit('new message', message);
 
     rooms[socket.room].addToHistory(message);
+
+    if (flood[socket.user.id] == undefined) {
+      flood[socket.user.id] = 1;
+    } else {
+      flood[socket.user.id]++;
+    }
   });
 
   // when the client emits 'add user', this listens and executes
@@ -123,7 +137,7 @@ io.on('connection', function (socket) {
     socket.join(room);
     isAuthenticated = true;
 
-    rooms[room].addUser(socket.user);
+    rooms[room].addUser(socket.user, socket);
 
     socket.emit('login', {
       numUsers: rooms[room].getUsersCount(),
@@ -165,3 +179,7 @@ io.on('connection', function (socket) {
     rooms[socket.room].removeUser(socket.user.id, socket);
   });
 });
+
+var antiflood = setInterval(function(){
+  flood = {};
+}, 60000);
