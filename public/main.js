@@ -284,22 +284,28 @@ $(function () {
 
   // Socket events
   socket.on('connect', function () {
-    /*socket.emit('authentication', {
-      user: userData,
-      hash: md5(JSON.stringify(userData) + 'euc3Karc4uN9yEk9vA')
-    });*/
-    socket.emit('hi', {
+    socket.emit('authentication', {
       user: userData,
       hash: md5(JSON.stringify(userData) + 'euc3Karc4uN9yEk9vA')
     });
+    console.log('U r connected!');
+  }); 
+  
+  socket.on('reconnect', function () {
     socket.emit('add user', {
       room: 'room1',
       roomHash: 'd3bdb69348a7fde810da2915cc52645a'
     });
-    console.log('U r connected!');
+    console.log('U r reconnected!');
   });
-
-  //socket.on('authenticated', function (data) {
+  
+  socket.on('disconnect', function () {
+    socket.removeAllListeners('authenticated');
+    socket.removeAllListeners('login');
+    console.log('U r disonnected!');
+  });
+  
+  socket.on('authenticated', function (data) {
     // Whenever the server emits 'login', log the login message
     socket.on('login', function (data) {
       connected = true;
@@ -355,7 +361,7 @@ $(function () {
       console.log('command response');
       addCommandResponse(data);
     });
-  //});
+  });
 
   // Whenever the server emits 'stop typing', kill the typing message
   socket.on('auth failed', function (data) {
