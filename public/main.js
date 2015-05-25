@@ -326,6 +326,14 @@ $(function () {
       removeChatTyping(data);
     });
 
+    socket.on('banned', function (data) {
+      log('Пользователь ' + data.user.name + ' заблокирован на ' + data.period + ' минут');
+    });
+
+    socket.on('unbanned', function (data) {
+      log('Пользователь ' + data.user + ' разблокирован');
+    });
+
     socket.on('command response', function (data) {
       console.log('command response');
       addCommandResponse(data);

@@ -3,6 +3,7 @@
 var express = require('express');
 var app = express();
 var crypto = require('crypto');
+var _redis = require('redis'), redis = _redis.createClient();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
@@ -16,6 +17,15 @@ var command = require('./js/command');
 if (!config) {
   throw new Error("No configuration available. See config.example.js for example.");
 }
+
+redis.on('error', function (err) {
+  console.log("Error " + err);
+});
+
+var redisReady = false;
+redis.on('ready', function (err) {
+  redisReady = true;
+});
 
 // Auth module
 require('socketio-auth')(io, {
@@ -51,6 +61,52 @@ function postAuthenticate(socket, data) {
   socket.user = userData;
 }
 
+/**
+ * Бан пользователя
+ *
+ */
+function userBan(userId, minutes, socket) {
+  var timestamp = Math.floor(Date.now() / 1000);
+  var seconds = minutes * 60;
+
+  if (redisReady) {
+    redis.setex('chat:ban' + userId, seconds, true);
+  }
+
+  ban[userId] = timestamp + seconds;
+
+  io.to(socket.room).emit('banned', { user: socket.user, period: minutes });
+}
+
+function userBannedInit(userId) {
+  if (redisReady) {
+    redis.exists('chat:ban' + userId, function(err, result) {
+      if (!err) {
+        if (result === 0) {
+          ban[userId] = false;
+        } else if (result === 1) {
+          var timestamp = Math.floor(Date.now() / 1000);
+          redis.ttl('chat:ban' + userId, function(err, ttl){
+            if (!err && ttl > 0) {
+              ban[userId] = timestamp + ttl;
+            } else {
+              ban[userId] = false;
+            }
+          });
+        }
+      }
+    });
+  }
+}
+
+function isUserBanned(userId) {
+  if (ban[userId] === false) {
+    return false;
+  }
+
+  return true;
+}
+
 server.listen(port, function () {
   console.log('Server listening at port %d', port);
 });
@@ -61,6 +117,7 @@ app.use(express.static(__dirname + '/public'));
 // Chatrooms
 var rooms = {};
 var flood = {};
+var ban = {};
 
 io.on('connection', function (socket) {
   var isAuthenticated = false;
@@ -77,16 +134,20 @@ io.on('connection', function (socket) {
       return true;
     }
 
-    if (flood[socket.user.id] >= 30) {
-      // ban
+    if (isUserBanned(socket.user.id)) {
+      return false;
+    }
 
+    if (flood[socket.user.id] >= 30) {
+      userBan(socket.user.id, 10, socket);
 
       return false;
     }
 
     var timestamp = Math.floor(Date.now() / 1000);
+    var timestampms = new Date().getTime();
     var messageId = crypto.createHash('md5');
-    messageId = messageId.update(JSON.stringify({ data: data, user: socket.user, time: new Date().getTime() })).digest('hex');
+    messageId = messageId.update(JSON.stringify({ userId: socket.user.id, time: timestampms })).digest('hex');
 
     var message = {
       id: messageId,
@@ -141,6 +202,8 @@ io.on('connection', function (socket) {
 
     rooms[room].addUser(socket.user, socket);
 
+    userBannedInit(socket.user.id);
+
     socket.emit('login', {
       numUsers: rooms[room].getUsersCount(),
       users: rooms[room].getUsers()
@@ -184,4 +247,12 @@ io.on('connection', function (socket) {
 
 var antiflood = setInterval(function(){
   flood = {};
+  var timestamp = Math.floor(Date.now() / 1000);
+
+  for(var userId in ban) {
+    if (ban[userId] <= timestamp) {
+      ban[userId] = false;
+      io.emit('unbanned', { user: userId });
+    }
+  }
 }, 60000);
