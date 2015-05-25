@@ -3,7 +3,7 @@
 var express = require('express');
 var app = express();
 var crypto = require('crypto');
-var _redis = require('redis'), redis = _redis.createClient();
+//var _redis = require('redis'), redis = _redis.createClient();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
@@ -17,27 +17,27 @@ if (!config) {
   throw new Error("No configuration available. See config.example.js for example.");
 }
 
-redis.on('error', function (err) {
+/*redis.on('error', function (err) {
   console.log("Error " + err);
 });
 
-var redisReady = false;
+*/var redisReady = false;/*
 redis.on('ready', function (err) {
   redisReady = true;
-});
+});*/
 
 // Auth module
-require('socketio-auth')(io, {
+/*require('socketio-auth')(io, {
   authenticate: authenticate,
   postAuthenticate: postAuthenticate,
   timeout: 1000
-});
+});*/
 
 /**
  * Процедура аутентификации пользователя
  *
  */
-function authenticate(data, callback) {
+/*function authenticate(data, callback) {
   var userData = data.user;
   var md5 = crypto.createHash('md5');
   var salt = config.salt;
@@ -48,17 +48,17 @@ function authenticate(data, callback) {
   }
 
   return callback(null, result);
-}
+}*/
 
 /**
  * Обработка авторизационных данных после успешной аутентификации
  *
  */
-function postAuthenticate(socket, data) {
+/*function postAuthenticate(socket, data) {
   var userData = data.user;
 
   socket.user = userData;
-}
+}*/
 
 /**
  * Бан пользователя
@@ -98,13 +98,13 @@ var userBannedInit = function(userId) {
   }
 }
 
-var isUserBanned = function(userId) {
+/*var isUserBanned = function(userId) {
   if (ban[userId] === false) {
     return false;
   }
 
   return true;
-}
+}*/
 
 var command = require('./js/command');
 command.importFunction('userBan', userBan);
@@ -123,6 +123,10 @@ var ban = {};
 
 io.on('connection', function (socket) {
   var isAuthenticated = false;
+  socket.on('hi', function (data) {
+    socket.user = data.user;
+    console.log('Hi');
+  });
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
@@ -136,9 +140,9 @@ io.on('connection', function (socket) {
       return true;
     }
 
-    if (isUserBanned(socket.user.id)) {
+    /*if (isUserBanned(socket.user.id)) {
       return false;
-    }
+    }*/
 
     if (flood[socket.user.id] >= 15) {
       userBan(socket.user.id, 10, socket);
@@ -167,36 +171,40 @@ io.on('connection', function (socket) {
     } else {
       flood[socket.user.id]++;
     }
+    console.log(data);
   });
 
   // when the client emits 'add user', this listens and executes
   socket.on('add user', function (data) {
+    console.log('Pass');
     // normilize room name
     var room = helper.roomNameNormilize(data.room);
 
     // check access
     if (room.length === 0 || !helper.checkRoomAuthorization(room, config.salt, data.roomHash)) {
         socket.emit('auth failed').disconnect('wrong room');
+        console.log('wrong room');
         return false;
     }
 
     // Prevent reading from multiple rooms
-    if (socket.room) {
+    /*if (socket.room) {
       socket.leave(socket.room);
       rooms[socket.room].removeUser(socket.user.id, socket);
-    }
+    }*/
 
     socket.room = room;
 
     // If not authorized
-    if (socket.user == undefined) {
+    /*if (socket.user == undefined) {
         socket.emit('auth failed').disconnect('wrong user data');
         return false;
-    }
+    }*/
 
     // Init room
     if (rooms[room] == undefined) {
         rooms[room] = new Room(room);
+        console.log('create new room ' + room);
     }
 
     socket.join(room);
@@ -213,13 +221,14 @@ io.on('connection', function (socket) {
 
     // History of last messages in chat
     rooms[socket.room].sendHistory(socket);
+    console.log(data);
   });
 
   // when the client emits 'typing', we broadcast it to others
   socket.on('typing', function () {
-    if (!isAuthenticated || isUserBanned(socket.user.id)) {
+    /*if (!isAuthenticated || isUserBanned(socket.user.id)) {
       return false;
-    }
+    }*/
 
     socket.broadcast.to(socket.room).emit('typing', {
       user: socket.user
@@ -228,9 +237,9 @@ io.on('connection', function (socket) {
 
   // when the client emits 'stop typing', we broadcast it to others
   socket.on('stop typing', function () {
-    if (!isAuthenticated || isUserBanned(socket.user.id)) {
+    /*if (!isAuthenticated || isUserBanned(socket.user.id)) {
       return false;
-    }
+    }*/
 
     socket.broadcast.to(socket.room).emit('stop typing', {
       user: socket.user
@@ -244,6 +253,7 @@ io.on('connection', function (socket) {
     }
 
     rooms[socket.room].removeUser(socket.user.id, socket);
+    console.log('Bye bye');
   });
 });
 

@@ -28,7 +28,11 @@ $(function () {
   var lastTypingTime;
   var $currentInput = $usernameInput.focus();
 
-  var socket = io();
+  var socket = io.connect('http://127.0.0.1:3000/', {
+    'reconnect': true,
+    'reconnection delay': 500,
+    'max reconnection attempts': 10
+  });
 
   var id = Math.floor(Math.random() * (9999 - 1 + 1)) + 1;
   var userData = {
@@ -280,13 +284,22 @@ $(function () {
 
   // Socket events
   socket.on('connect', function () {
-    socket.emit('authentication', {
+    /*socket.emit('authentication', {
+      user: userData,
+      hash: md5(JSON.stringify(userData) + 'euc3Karc4uN9yEk9vA')
+    });*/
+    socket.emit('hi', {
       user: userData,
       hash: md5(JSON.stringify(userData) + 'euc3Karc4uN9yEk9vA')
     });
+    socket.emit('add user', {
+      room: 'room1',
+      roomHash: 'd3bdb69348a7fde810da2915cc52645a'
+    });
+    console.log('U r connected!');
   });
 
-  socket.on('authenticated', function (data) {
+  //socket.on('authenticated', function (data) {
     // Whenever the server emits 'login', log the login message
     socket.on('login', function (data) {
       connected = true;
@@ -295,23 +308,27 @@ $(function () {
       log(message, {
         prepend: true
       });
+      console.log('u r logged in');
       addParticipantsMessage(data);
     });
 
     // Whenever the server emits 'new message', update the chat body
     socket.on('new message', function (data) {
       addChatMessage(data);
+      console.log('new message');
     });
 
     // Whenever the server emits 'user joined', log it in the chat body
     socket.on('user joined', function (data) {
       log(data.user.name + ' joined');
+      console.log('new user');
       addParticipantsMessage(data);
     });
 
     // Whenever the server emits 'user left', log it in the chat body
     socket.on('user left', function (data) {
       log(data.user.name + ' left');
+      console.log('user left');
       addParticipantsMessage(data);
       removeChatTyping(data);
     });
@@ -338,7 +355,7 @@ $(function () {
       console.log('command response');
       addCommandResponse(data);
     });
-  });
+  //});
 
   // Whenever the server emits 'stop typing', kill the typing message
   socket.on('auth failed', function (data) {
