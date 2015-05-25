@@ -76,17 +76,18 @@ io.on('connection', function (socket) {
       return true;
     }
 
-    var hash = crypto.createHash('md5');
-    hash = hash.update(data).digest('hex');
+    var messageId = crypto.createHash('md5');
+    messageId = messageId.update(data).digest('hex');
 
-    rooms[socket.room].addToHistory(socket.user, data);
-
-    io.to(socket.room).emit('new message', {
+    var message = {
+      id: messageId,
       user: socket.user,
-      message: data,
-      room: socket.room,
-      id: hash
-    });
+      message: data
+    };
+
+    io.to(socket.room).emit('new message', message);
+
+    rooms[socket.room].addToHistory(message);
   });
 
   // when the client emits 'add user', this listens and executes

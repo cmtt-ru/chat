@@ -30,11 +30,11 @@ Room.prototype.getUsersCount = function() {
 
 /**
  * Добавляет сообщения в историю
- * @param  string user
- * @param  string data
+ * @param  object user
  */
-Room.prototype.addToHistory = function(user, data) {
-  this.history.push({ message:data, user: user });
+Room.prototype.addToHistory = function(message) {
+  this.history.push(message);
+
   if (this.history.length > 30) {
     this.history.shift();
   }
@@ -47,10 +47,7 @@ Room.prototype.addToHistory = function(user, data) {
 Room.prototype.sendHistory = function(socket) {
   if (this.history.length > 0) {
     this.history.forEach(function(data) {
-      socket.emit('new message', {
-        user: data.user,
-        message: data.message
-      });
+      socket.emit('new message', data);
     });
   }
 }
