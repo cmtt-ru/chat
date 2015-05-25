@@ -63,11 +63,11 @@ app.use(express.static(__dirname + '/public'));
 var rooms = {};
 
 io.on('connection', function (socket) {
-  var addedUser = false;
+  var isAuthenticated = false;
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
-    if (socket.room) {
+    if (isAuthenticated) {
       // if message starts with '/' — we're not sending it to everyone, we're processing it in unique way
       if (command.isCommand(data)) {
         command.processCommand(data, socket);
@@ -126,7 +126,7 @@ io.on('connection', function (socket) {
     rooms[room].users[socket.user.id] = socket.user;
     ++rooms[room].numUsers;
 
-    addedUser = true;
+    isAuthenticated = true;
 
     socket.join(room);
 
@@ -148,7 +148,7 @@ io.on('connection', function (socket) {
 
   // when the client emits 'typing', we broadcast it to others
   socket.on('typing', function () {
-    if (socket.room) {
+    if (isAuthenticated) {
       socket.broadcast.to(socket.room).emit('typing', {
         user: socket.user
       });
@@ -157,7 +157,7 @@ io.on('connection', function (socket) {
 
   // when the client emits 'stop typing', we broadcast it to others
   socket.on('stop typing', function () {
-    if (socket.room){
+    if (isAuthenticated){
       socket.broadcast.to(socket.room).emit('stop typing', {
         user: socket.user
       });
@@ -166,7 +166,7 @@ io.on('connection', function (socket) {
 
   // when the user disconnects.. perform this
   socket.on('disconnect', function () {
-    if (socket.room) {
+    if (isAuthenticated) {
       rooms[socket.room].removeUser(socket.user.id);
 
       // echo to the room that this client has left
