@@ -56,12 +56,35 @@ Room.prototype.sendHistory = function(socket) {
 }
 
 /**
- * Удаляем данные пользователя из комнаты
- * @param  string user
+ * Добавляем пользователя в комнату
+ * @param  object user
+ * @param  object socket
  */
-Room.prototype.removeUser = function(user) {
-  delete this.users[user];
+Room.prototype.addUser = function(user, socket) {
+  this.users[user.id] = user;
+  ++this.numUsers;
+
+  socket.broadcast.to(this.name).emit('user joined', {
+    user: socket.user,
+    numUsers: this.getUsersCount(),
+    users: this.getUsers()
+  });
+}
+
+/**
+ * Удаляем данные пользователя из комнаты
+ * @param  integer userId
+ * @param  object socket
+ */
+Room.prototype.removeUser = function(userId, socket) {
+  delete this.users[userId];
   --this.numUsers;
+
+  socket.broadcast.to(this.name).emit('user left', {
+    user: socket.user,
+    numUsers: this.getUsersCount(),
+    users: this.getUsers()
+  });
 }
 
 module.exports = Room;

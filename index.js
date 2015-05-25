@@ -102,13 +102,8 @@ io.on('connection', function (socket) {
 
     // Prevent reading from multiple rooms
     if (socket.room) {
-      socket.leave(socket.room); 
-      rooms[socket.room].removeUser(socket.user.id);
-      socket.broadcast.to(socket.room).emit('user left', {
-        user: socket.user,
-        numUsers: rooms[socket.room].getUsersCount(),
-        users: rooms[socket.room].getUsers()
-      });
+      socket.leave(socket.room);
+      rooms[socket.room].removeUser(socket.user.id, socket);
     }
 
     socket.room = room;
@@ -122,24 +117,14 @@ io.on('connection', function (socket) {
     // Init room
     if (rooms[room] == undefined) {
         rooms[room] = new Room(room);
-
     }
 
-    rooms[room].users[socket.user.id] = socket.user;
-    ++rooms[room].numUsers;
-
+    socket.join(room);
     isAuthenticated = true;
 
-    socket.join(room);
+    rooms[room].addUser(socket.user);
 
     socket.emit('login', {
-      numUsers: rooms[room].getUsersCount(),
-      users: rooms[room].getUsers()
-    });
-
-    // echo to room that a person has connected
-    socket.broadcast.to(socket.room).emit('user joined', {
-      user: socket.user,
       numUsers: rooms[room].getUsersCount(),
       users: rooms[room].getUsers()
     });
@@ -176,13 +161,6 @@ io.on('connection', function (socket) {
       return false;
     }
 
-    rooms[socket.room].removeUser(socket.user.id);
-
-    // echo to the room that this client has left
-    socket.broadcast.to(socket.room).emit('user left', {
-      user: socket.user,
-      numUsers: rooms[socket.room].getUsersCount(),
-      users: rooms[socket.room].getUsers()
-    });
+    rooms[socket.room].removeUser(socket.user.id, socket);
   });
 });
