@@ -327,7 +327,7 @@ $(function () {
     });
 
     socket.on('banned', function (data) {
-      log('Пользователь ' + data.user.name + ' заблокирован на ' + data.period + ' минут');
+      log('Пользователь ' + data.user + ' заблокирован на ' + data.period + ' минут');
     });
 
     socket.on('unbanned', function (data) {

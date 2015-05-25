@@ -10,7 +10,6 @@ var port = process.env.PORT || 3000;
 var config = require('./config');
 var Room = require('./js/room');
 var helper = require('./js/helper');
-var command = require('./js/command');
 
 // Check for config availability
 
@@ -65,7 +64,7 @@ function postAuthenticate(socket, data) {
  * Бан пользователя
  *
  */
-function userBan(userId, minutes, socket) {
+var userBan = function(userId, minutes, socket) {
   var timestamp = Math.floor(Date.now() / 1000);
   var seconds = minutes * 60;
 
@@ -75,10 +74,10 @@ function userBan(userId, minutes, socket) {
 
   ban[userId] = timestamp + seconds;
 
-  io.to(socket.room).emit('banned', { user: socket.user, period: minutes });
+  io.to(socket.room).emit('banned', { user: userId, period: minutes });
 }
 
-function userBannedInit(userId) {
+var userBannedInit = function(userId) {
   if (redisReady) {
     redis.exists('chat:ban' + userId, function(err, result) {
       if (!err) {
@@ -99,13 +98,16 @@ function userBannedInit(userId) {
   }
 }
 
-function isUserBanned(userId) {
+var isUserBanned = function(userId) {
   if (ban[userId] === false) {
     return false;
   }
 
   return true;
 }
+
+var command = require('./js/command');
+command.importFunction('userBan', userBan);
 
 server.listen(port, function () {
   console.log('Server listening at port %d', port);
@@ -138,7 +140,7 @@ io.on('connection', function (socket) {
       return false;
     }
 
-    if (flood[socket.user.id] >= 30) {
+    if (flood[socket.user.id] >= 15) {
       userBan(socket.user.id, 10, socket);
 
       return false;
@@ -255,4 +257,4 @@ var antiflood = setInterval(function(){
       io.emit('unbanned', { user: userId });
     }
   }
-}, 60000);
+}, 30000);

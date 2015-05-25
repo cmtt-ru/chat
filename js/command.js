@@ -1,3 +1,13 @@
+var importedFunctions = {};
+
+var administration = {
+  1: true
+};
+
+function importFunction(name, fnc) {
+  importedFunctions[name] = fnc;
+}
+
 function isCommand(message) {
   return (message[0] === '/') ? true : false;
 }
@@ -27,13 +37,23 @@ function processCommand(data, socket) {
       break;
 
     case 'durov':
-      responseCommand('durov', 'дуров позвонит', socket);
+      responseCommand('durov', 'Дуров позвонит', socket);
       break;
 
     case 'ban':
-      var response = '> /ban<br>' +
-          'In development';
-      responseCommand('ban', response, socket);
+      if (administration[socket.user.id] === true) {
+        var userId = parseInt(commandArgs[0]);
+        var minutes = parseInt(commandArgs[1]);
+
+        if (userId > 0 && minutes > 0) {
+          responseCommand('ban', 'OK. Пользователь №' + userId + ' заблокирован', socket);
+          if (importedFunctions['userBan'] !== undefined) {
+            importedFunctions['userBan'](userId, minutes, socket);
+          }
+        }
+      } else {
+        responseCommand('ban', 'Не-а', socket);
+      }
       break;
 
     case 'help':
@@ -50,3 +70,4 @@ function processCommand(data, socket) {
 module.exports.isCommand = isCommand;
 module.exports.responseCommand = responseCommand;
 module.exports.processCommand = processCommand;
+module.exports.importFunction = importFunction;
