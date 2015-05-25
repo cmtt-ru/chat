@@ -72,8 +72,8 @@ io.on('connection', function (socket) {
     }
 
     // if message starts with '/' — we're not sending it to everyone, we're processing it in unique way
-    if (command.isCommand(data)) {
-      command.processCommand(data, socket);
+    if (command.isCommand(data.text)) {
+      command.processCommand(data.text, socket);
       return true;
     }
 
@@ -84,13 +84,15 @@ io.on('connection', function (socket) {
       return false;
     }
 
+    var timestamp = Math.floor(Date.now() / 1000);
     var messageId = crypto.createHash('md5');
-    messageId = messageId.update(data).digest('hex');
+    messageId = messageId.update(JSON.stringify({ data: data, user: socket.user, time: new Date().getTime() })).digest('hex');
 
     var message = {
       id: messageId,
       user: socket.user,
-      message: data
+      message: data.text,
+      timestamp: timestamp
     };
 
     io.to(socket.room).emit('new message', message);

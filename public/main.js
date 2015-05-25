@@ -80,7 +80,7 @@ $(function () {
       $inputMessage.val('');
 
       // tell server to execute 'new message' and send along one parameter
-      socket.emit('new message', message);
+      socket.emit('new message', { text: message });
     }
   }
 
