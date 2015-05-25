@@ -215,7 +215,7 @@ io.on('connection', function (socket) {
 
   // when the client emits 'typing', we broadcast it to others
   socket.on('typing', function () {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || isUserBanned(socket.user.id)) {
       return false;
     }
 
@@ -226,7 +226,7 @@ io.on('connection', function (socket) {
 
   // when the client emits 'stop typing', we broadcast it to others
   socket.on('stop typing', function () {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || isUserBanned(socket.user.id)) {
       return false;
     }
 
