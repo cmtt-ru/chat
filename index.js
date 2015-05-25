@@ -250,7 +250,7 @@ var antiflood = setInterval(function(){
   var timestamp = Math.floor(Date.now() / 1000);
 
   for(var userId in ban) {
-    if (ban[userId] <= timestamp) {
+    if (ban[userId] !== false && ban[userId] <= timestamp) {
       ban[userId] = false;
       io.emit('unbanned', { user: userId });
     }
