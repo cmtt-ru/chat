@@ -49,7 +49,6 @@ function postAuthenticate(socket, data) {
   var userData = data.user;
 
   socket.user = userData;
-  socket.username = userData.name;
 }
 
 server.listen(port, function () {
@@ -67,24 +66,27 @@ io.on('connection', function (socket) {
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
-    if (isAuthenticated) {
-      // if message starts with '/' — we're not sending it to everyone, we're processing it in unique way
-      if (command.isCommand(data)) {
-        command.processCommand(data, socket);
-      } else {
-        var hash = crypto.createHash('md5');
-        hash = hash.update(data).digest('hex');
-
-        rooms[socket.room].addToHistory(socket.user, data);
-
-        io.to(socket.room).emit('new message', {
-          user: socket.user,
-          message: data,
-          room: socket.room,
-          id: hash
-        });
-      }
+    if (!isAuthenticated) {
+      return false;
     }
+
+    // if message starts with '/' — we're not sending it to everyone, we're processing it in unique way
+    if (command.isCommand(data)) {
+      command.processCommand(data, socket);
+      return true;
+    }
+
+    var hash = crypto.createHash('md5');
+    hash = hash.update(data).digest('hex');
+
+    rooms[socket.room].addToHistory(socket.user, data);
+
+    io.to(socket.room).emit('new message', {
+      user: socket.user,
+      message: data,
+      room: socket.room,
+      id: hash
+    });
   });
 
   // when the client emits 'add user', this listens and executes
@@ -148,33 +150,39 @@ io.on('connection', function (socket) {
 
   // when the client emits 'typing', we broadcast it to others
   socket.on('typing', function () {
-    if (isAuthenticated) {
-      socket.broadcast.to(socket.room).emit('typing', {
-        user: socket.user
-      });
+    if (!isAuthenticated) {
+      return false;
     }
+
+    socket.broadcast.to(socket.room).emit('typing', {
+      user: socket.user
+    });
   });
 
   // when the client emits 'stop typing', we broadcast it to others
   socket.on('stop typing', function () {
-    if (isAuthenticated){
-      socket.broadcast.to(socket.room).emit('stop typing', {
-        user: socket.user
-      });
+    if (!isAuthenticated) {
+      return false;
     }
+
+    socket.broadcast.to(socket.room).emit('stop typing', {
+      user: socket.user
+    });
   });
 
   // when the user disconnects.. perform this
   socket.on('disconnect', function () {
-    if (isAuthenticated) {
-      rooms[socket.room].removeUser(socket.user.id);
-
-      // echo to the room that this client has left
-      socket.broadcast.to(socket.room).emit('user left', {
-        user: socket.user,
-        numUsers: rooms[socket.room].getUsersCount(),
-        users: rooms[socket.room].getUsers()
-      });
+    if (!isAuthenticated) {
+      return false;
     }
+
+    rooms[socket.room].removeUser(socket.user.id);
+
+    // echo to the room that this client has left
+    socket.broadcast.to(socket.room).emit('user left', {
+      user: socket.user,
+      numUsers: rooms[socket.room].getUsersCount(),
+      users: rooms[socket.room].getUsers()
+    });
   });
 });
