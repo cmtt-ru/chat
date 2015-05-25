@@ -67,21 +67,23 @@ io.on('connection', function (socket) {
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
-    // if message starts with '/' — we're not sending it to everyone, we're processing it in unique way
-    if (command.isCommand(data)) {
-      command.processCommand(data, socket);
-    } else {
-      var hash = crypto.createHash('md5');
-      hash = hash.update(data).digest('hex');
+    if (socket.room) {
+      // if message starts with '/' — we're not sending it to everyone, we're processing it in unique way
+      if (command.isCommand(data)) {
+        command.processCommand(data, socket);
+      } else {
+        var hash = crypto.createHash('md5');
+        hash = hash.update(data).digest('hex');
 
-      rooms[socket.room].addToHistory(socket.user, data);
+        rooms[socket.room].addToHistory(socket.user, data);
 
-      io.to(socket.room).emit('new message', {
-        user: socket.user,
-        message: data,
-        room: socket.room,
-        id: hash
-      });
+        io.to(socket.room).emit('new message', {
+          user: socket.user,
+          message: data,
+          room: socket.room,
+          id: hash
+        });
+      }
     }
   });
 
@@ -146,21 +148,25 @@ io.on('connection', function (socket) {
 
   // when the client emits 'typing', we broadcast it to others
   socket.on('typing', function () {
-    socket.broadcast.to(socket.room).emit('typing', {
-      user: socket.user
-    });
+    if (socket.room) {
+      socket.broadcast.to(socket.room).emit('typing', {
+        user: socket.user
+      });
+    }
   });
 
   // when the client emits 'stop typing', we broadcast it to others
   socket.on('stop typing', function () {
-    socket.broadcast.to(socket.room).emit('stop typing', {
-      user: socket.user
-    });
+    if (socket.room){
+      socket.broadcast.to(socket.room).emit('stop typing', {
+        user: socket.user
+      });
+    }
   });
 
   // when the user disconnects.. perform this
   socket.on('disconnect', function () {
-    if (addedUser) {
+    if (socket.room) {
       rooms[socket.room].removeUser(socket.user.id);
 
       // echo to the room that this client has left
