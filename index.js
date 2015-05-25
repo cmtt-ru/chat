@@ -96,7 +96,17 @@ io.on('connection', function (socket) {
         return false;
     }
 
-    if (socket.room) socket.leave(socket.room); // Prevent reading from multiple rooms
+    // Prevent reading from multiple rooms
+    if (socket.room) {
+      socket.leave(socket.room); 
+      rooms[socket.room].removeUser(socket.user.id);
+      socket.broadcast.to(socket.room).emit('user left', {
+        user: socket.user,
+        numUsers: rooms[socket.room].getUsersCount(),
+        users: rooms[socket.room].getUsers()
+      });
+    }
+
     socket.room = room;
 
     // If not authorized
@@ -151,14 +161,13 @@ io.on('connection', function (socket) {
   // when the user disconnects.. perform this
   socket.on('disconnect', function () {
     if (addedUser) {
-      delete rooms[socket.room].users[socket.user.id];
-      --rooms[socket.room].numUsers;
+      rooms[socket.room].removeUser(socket.user.id);
 
       // echo to the room that this client has left
       socket.broadcast.to(socket.room).emit('user left', {
         user: socket.user,
-      numUsers: rooms[socket.room].getUsersCount(),
-      users: rooms[socket.room].getUsers()
+        numUsers: rooms[socket.room].getUsersCount(),
+        users: rooms[socket.room].getUsers()
       });
     }
   });

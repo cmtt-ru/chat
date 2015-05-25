@@ -55,4 +55,13 @@ Room.prototype.sendHistory = function(socket) {
   }
 }
 
+/**
+ * Удаляем данные пользователя из комнаты
+ * @param  string user
+ */
+Room.prototype.removeUser = function(user) {
+  delete this.users[user];
+  --this.numUsers;
+}
+
 module.exports = Room;
