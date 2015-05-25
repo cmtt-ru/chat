@@ -80,7 +80,7 @@ $(function () {
       $inputMessage.val('');
 
       // tell server to execute 'new message' and send along one parameter
-      socket.emit('new message', message);
+      socket.emit('new message', { text: message });
     }
   }
 
@@ -324,6 +324,14 @@ $(function () {
     // Whenever the server emits 'stop typing', kill the typing message
     socket.on('stop typing', function (data) {
       removeChatTyping(data);
+    });
+
+    socket.on('banned', function (data) {
+      log('Пользователь ' + data.user.name + ' заблокирован на ' + data.period + ' минут');
+    });
+
+    socket.on('unbanned', function (data) {
+      log('Пользователь ' + data.user + ' разблокирован');
     });
 
     socket.on('command response', function (data) {
