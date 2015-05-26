@@ -33,7 +33,6 @@ $(function() {
   var connected = false;
   var typing = false;
   var lastTypingTime;
-  var lastPingTimer;
 
   $(window).resize(function(){
     definePanelHeight();
@@ -195,7 +194,6 @@ $(function() {
 
   socket = io('//' + document.location.host, {
     reconnection: true,
-    pingInterval: 2000,
     autoConnect: false
   });
 
@@ -215,16 +213,6 @@ $(function() {
       room: room,
       roomHash: roomHash
     });
-  });
-
-  socket.on('ping', function() {
-    lastPingTimer = setTimeout(function(){
-      changeStatus(-1);
-    }, 2000);
-  });
-
-  socket.on('pong', function() {
-    clearTimeout(lastPingTimer);
   });
 
   socket.on('connect_error', function() {
