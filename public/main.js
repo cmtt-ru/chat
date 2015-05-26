@@ -86,7 +86,14 @@ $(function() {
   }
 
   function addCommandResponse(data) {
-    var el = $('<li>').addClass('command-response').text(data.response);
+    var el = $('<li>').addClass('command-response');
+
+    // /help doesn't contains unsec text
+    if (data.command === 'help') {
+      el = el.html(data.response);
+    } else {
+      el = el.text(data.response);
+    }
     addMessageElement(el);
   }
 
