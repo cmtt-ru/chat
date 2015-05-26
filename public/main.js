@@ -37,17 +37,6 @@ $(function() {
   });
   definePanelHeight();
 
-  /*var id = Math.floor(Math.random() * 9999 + 1);
-  userData = {
-    id: id,
-    name: 'User #' + id,
-    image: 'https://static39.cmtt.ru/paper-preview-fox/m/us/musk-longread-1/1bce7f668558-normal.jpg'
-  };
-  userDataHash = md5(JSON.stringify(userData) + 'euc3Karc4uN9yEk9vA');
-
-  room = 'room1';
-  roomHash = 'd3bdb69348a7fde810da2915cc52645a';*/
-
   // --------------------------------------------------------------
 
   function cleanInput(input) {
@@ -223,6 +212,8 @@ $(function() {
 
   // Socket events
   socket.on('connect', function() {
+    $('#chatWindow').html('');
+
     socket.emit('authentication', {
       user: userData,
       hash: userDataHash
