@@ -28,6 +28,8 @@ $(function() {
   var template = $("#message-typing-template").html();
   var messageTypingTemplate = Handlebars.compile(template);
 
+  var autolinker = new Autolinker();
+
   var connected = false;
   var typing = false;
   var lastTypingTime;
@@ -92,6 +94,7 @@ $(function() {
 
   function addChatMessage(data) {
     removeChatTyping(data);
+    data.message = autolinker.link(data.message);
     addMessageElement(messageTemplate(data));
 
     var messageDate = new Date(data.timestamp*1000);
