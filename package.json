@@ -5,7 +5,8 @@
   "main": "index.js",
   "contributors": [
     "Ilya Chekalskiy <ilya@chekalskiy.ru> (https://chekalskiy.ru/)",
-    "Alexey Bystrov <strikeentco@gmail.com> (http://i.strikeentco.com/)"
+    "Alexey Bystrov <strikeentco@gmail.com> (http://i.strikeentco.com/)",
+    "David Frenkel <frenkdave@gmail.com> (http://merrik.ru)"
   ],
   "private": true,
   "license": "MIT",
