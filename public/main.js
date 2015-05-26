@@ -82,7 +82,6 @@ $(function() {
     var el = $(el);
     var username = el.find('.media-user-name');
     if (username.length > 0) {
-      console.log(colorHash.hex(username.text()));
       username.css('color', colorHash.hex(username.text()));
     }
 
@@ -161,11 +160,14 @@ $(function() {
   });
 
   socket.on('disconnect', function() {
+    connected = false;
+
     socket.removeAllListeners('authenticated');
-    socket.removeAllListeners('login');
+
+    log('Соединение с чатом прервано');
   });
 
-  socket.on('authenticated', function(data) {
+  socket.on('authenticated', function() {
     socket.emit('add user', {
       room: room,
       roomHash: roomHash
@@ -175,7 +177,7 @@ $(function() {
     socket.on('login', function (data) {
       connected = true;
 
-      log("Вы вошли в чат!");
+      log('Вы вошли в чат!');
       updateOnlineList(data);
     });
 
@@ -214,12 +216,12 @@ $(function() {
       log(data.user + ' разблокирован');
     });
 
+    // slash command response
     socket.on('command response', function (data) {
       addCommandResponse(data);
     });
   });
 
-  // Whenever the server emits 'stop typing', kill the typing message
   socket.on('auth failed', function (data) {
     alert('Access denied');
   });
