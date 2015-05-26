@@ -84,8 +84,8 @@ $(function() {
 
   function addChatMessage(data) {
     removeChatTyping(data);
+    data.message = autolinker.link(data.message);
     addMessageElement(messageTemplate(data));
-    $(".message"+data.id+" .media-message").html(autolinker.link(data.message));
 
     var messageDate = new Date(data.timestamp*1000);
     $(".message"+data.id+" .timestamp").text(messageDate.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1"));

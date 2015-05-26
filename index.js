@@ -150,7 +150,7 @@ io.on('connection', function (socket) {
     var message = {
       id: messageId,
       user: socket.user,
-      message: data.text,
+      message: helper.escapeHTML(data.text),
       timestamp: timestamp
     };
 
