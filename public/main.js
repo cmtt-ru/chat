@@ -3,7 +3,7 @@ var roomHash = null;
 var userData = null;
 var userDataHash = null;
 
-$(function() {
+$(function () {
   // Templates
   var template = $("#message-template").html();
   var messageTemplate = Handlebars.compile(template);
@@ -18,7 +18,7 @@ $(function() {
   var typing = false;
   var lastTypingTime;
 
-  $(window).resize(function(){
+  $(window).resize(function () {
     definePanelHeight();
   });
   definePanelHeight();
@@ -33,6 +33,40 @@ $(function() {
 
   room = 'room1';
   roomHash = 'd3bdb69348a7fde810da2915cc52645a';
+
+  /* Get notifications permissions */
+  var Notification = window.Notification || window.mozNotification || window.webkitNotification;
+  var notificationPermission;
+
+  Notification.requestPermission(function (permission) {
+    notificationPermission = permission;
+  });
+
+  function showNotification(title, body, icon) {
+    if (notificationPermission === 'granted') {
+      var instance = new Notification(title, {
+        body: body,
+        icon: icon
+      });
+
+      instance.onclick = function () {
+        $('#messageInput').focus();
+      };
+      instance.onerror = function () {
+        // Something to do
+      };
+      instance.onshow = function () {
+        // Something to do
+      };
+      instance.onclose = function () {
+        // Something to do
+      };  
+
+      return false;
+    } else {
+      return false;
+    }
+  }
 
   // --------------------------------------------------------------
 
@@ -57,7 +91,7 @@ $(function() {
     if (data.users != undefined) {
       var list = '';
 
-      $.each(data.users, function(i, v) {
+      $.each(data.users, function (i, v) {
         list += onlineUserTemplate(v);
       });
 
@@ -73,7 +107,9 @@ $(function() {
     if (message && connected) {
       $('#messageInput').val('');
 
-      socket.emit('new message', { text: message });
+      socket.emit('new message', {
+        text: message
+      });
     }
   }
 
@@ -107,7 +143,7 @@ $(function() {
   }
 
   function removeChatTyping(data) {
-    $('.typing'+data.user.id).remove();
+    $('.typing' + data.user.id).remove();
   }
 
   function updateTyping() {
@@ -119,7 +155,7 @@ $(function() {
 
       lastTypingTime = (new Date()).getTime();
 
-      setTimeout(function() {
+      setTimeout(function () {
         var typingTimer = (new Date()).getTime();
         var timeDiff = typingTimer - lastTypingTime;
         if (timeDiff >= 500 && typing) {
@@ -162,7 +198,7 @@ $(function() {
   // --------------------------------------------------------------
 
   // Keyboard events
-  $(window).keydown(function(event) {
+  $(window).keydown(function (event) {
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
       $('#messageInput').focus();
     }
@@ -174,7 +210,7 @@ $(function() {
     }
   });
 
-  $('#messageInput').on('input', function() {
+  $('#messageInput').on('input', function () {
     updateTyping();
   });
 
@@ -185,21 +221,21 @@ $(function() {
   });
 
   // Socket events
-  socket.on('connect', function() {
+  socket.on('connect', function () {
     socket.emit('authentication', {
       user: userData,
       hash: userDataHash
     });
   });
 
-  socket.on('reconnect', function() {
+  socket.on('reconnect', function () {
     socket.emit('add user', {
       room: room,
       roomHash: roomHash
     });
   });
 
-  socket.on('disconnect', function() {
+  socket.on('disconnect', function () {
     connected = false;
 
     socket.removeAllListeners('authenticated');
@@ -207,7 +243,7 @@ $(function() {
     log('Соединение с чатом прервано');
   });
 
-  socket.on('authenticated', function() {
+  socket.on('authenticated', function () {
     socket.emit('add user', {
       room: room,
       roomHash: roomHash
@@ -223,6 +259,9 @@ $(function() {
 
     // message
     socket.on('new message', function (data) {
+      if (!data.history && !document.hasFocus()) {
+        showNotification('TJ Chat', '@' + data.user.name + ': ' + data.message, 'https://static39.cmtt.ru/paper-preview-fox/m/us/musk-longread-1/1bce7f668558-normal.jpg');
+      }
       addChatMessage(data);
     });
 
