@@ -23,10 +23,6 @@ $(function() {
   });
   definePanelHeight();
 
-  $(document).bind('touchmove', function(e) {
-    if (!$('.scrollable').has($(e.target)).length) e.preventDefault();
-  });
-
   var id = Math.floor(Math.random() * 9999 + 1);
   userData = {
     id: id,

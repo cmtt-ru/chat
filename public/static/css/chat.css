@@ -1,5 +1,6 @@
 html,body {
     height:100%;
+    overflow: hidden;
 }
 a, a:hover, a:active {
     color: #333;
