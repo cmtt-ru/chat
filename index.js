@@ -215,7 +215,7 @@ io.on('connection', function (socket) {
   });
 
   // when the client emits 'typing', we broadcast it to others
-  socket.on('typing', function () {
+  /*socket.on('typing', function () {
     if (!isAuthenticated || isUserBanned(socket.user.id)) {
       return false;
     }
@@ -234,7 +234,7 @@ io.on('connection', function (socket) {
     socket.broadcast.to(socket.room).emit('stop typing', {
       user: socket.user
     });
-  });
+  });*/
 
   // when the user disconnects.. perform this
   socket.on('disconnect', function () {

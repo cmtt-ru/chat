@@ -130,6 +130,7 @@ $(function() {
   }
 
   function updateTyping() {
+    return false;
     if (connected) {
       if (!typing) {
         typing = true;
@@ -188,20 +189,20 @@ $(function() {
 
     if (event.which === 13) {
       sendMessage();
-      socket.emit('stop typing');
+      //socket.emit('stop typing');
       typing = false;
     }
   });
 
   $('#messageSubmitButton').click(function (event) {
     sendMessage();
-    socket.emit('stop typing');
+    //socket.emit('stop typing');
     typing = false;
   });
 
-  $('#messageInput').on('input', function() {
+  /*$('#messageInput').on('input', function() {
     updateTyping();
-  });
+  });*/
 
   // --------------------------------------------------------------
 
@@ -267,13 +268,13 @@ $(function() {
     });
 
     // typing
-    socket.on('typing', function (data) {
+    /*socket.on('typing', function (data) {
       addChatTyping(data);
     });
 
     socket.on('stop typing', function (data) {
       removeChatTyping(data);
-    });
+    });*/
 
     // ban
     socket.on('banned', function (data) {
