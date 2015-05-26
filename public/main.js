@@ -111,7 +111,7 @@ $(function() {
     var el = $(el);
     var username = el.find('.media-user-name');
     if (username.length > 0) {
-      username.css('color', userColor(username.text()));
+      //username.css('color', userColor(username.text()));
     }
 
     $('#chatWindow').append(el);

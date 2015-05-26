@@ -53,11 +53,11 @@ a, a:hover, a:active {
 #chatWindow .media .timestamp {
     color: #aaa;
     font-size: 12px;
-    line-height: 20px;
+    line-height: 24px;
 }
 
 #chatWindow .media-body {
-    line-height: 20px;
+    line-height: 24px;
     white-space: -moz-pre-wrap; /* Mozilla */
     white-space: -hp-pre-wrap; /* HP printers */
     white-space: -o-pre-wrap; /* Opera 7 */
