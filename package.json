@@ -1,6 +1,6 @@
 {
-  "name": "tjournal/chat",
-  "version": "0.1",
+  "name": "tjournal-chat",
+  "version": "0.1.0",
   "description": "Chat for TJournal",
   "main": "index.js",
   "contributors": [
