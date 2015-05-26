@@ -42,7 +42,8 @@
     </div>
 
     <script id="message-template" type="text/x-handlebars-template">
-    <li class="media" data-id="{{id}}">
+    <li class="media message{{id}}" data-id="{{id}}">
+        <div class="pull-right timestamp"><time class="timeago" datetime=""></time></div>
         <div class="media-left">
             <a href="http://tjournal.ru/users/{{user.id}}" target="_blank">
                 <img class="media-object img-circle" src="{{user.image}}" width="20" height="20">
@@ -80,6 +81,7 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/static/js/vendor/handlebars.js"></script>
+    <script src="/static/js/vendor/timeago.js"></script>
     <script src="/md5.min.js"></script>
     <script src="/main.js"></script>
 </body>
