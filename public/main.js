@@ -1,7 +1,21 @@
+var socket;
 var room = null;
 var roomHash = null;
 var userData = null;
 var userDataHash = null;
+
+function gotMessage(evt) {
+  if (evt.origin === document.location.protocol + '//tj.local' || evt.origin === document.location.protocol + '//tjournal.ru') {
+    var data = $.parseJSON(evt.data);
+
+    userData = data.user;
+    userDataHash = data.userHash;
+    room = data.room;
+    roomHash = data.roomHash;
+
+    socket.open();
+  }
+}
 
 $(function() {
   // Templates
@@ -23,7 +37,7 @@ $(function() {
   });
   definePanelHeight();
 
-  var id = Math.floor(Math.random() * 9999 + 1);
+  /*var id = Math.floor(Math.random() * 9999 + 1);
   userData = {
     id: id,
     name: 'User #' + id,
@@ -32,7 +46,7 @@ $(function() {
   userDataHash = md5(JSON.stringify(userData) + 'euc3Karc4uN9yEk9vA');
 
   room = 'room1';
-  roomHash = 'd3bdb69348a7fde810da2915cc52645a';
+  roomHash = 'd3bdb69348a7fde810da2915cc52645a';*/
 
   // --------------------------------------------------------------
 
@@ -202,8 +216,9 @@ $(function() {
 
   // --------------------------------------------------------------
 
-  var socket = io('//' + document.location.host, {
-    reconnection: true
+  socket = io('//' + document.location.host, {
+    reconnection: true,
+    autoConnect: false
   });
 
   // Socket events
@@ -289,6 +304,14 @@ $(function() {
   });
 });
 
+if (window.addEventListener) {
+  window.addEventListener("message", gotMessage, false);
+}
+else {
+  window.attachEvent("onmessage", gotMessage);
+}
+
+// Scrolling on iOS
 (function registerScrolling($) {
     var prevTouchPosition = {},
         scrollYClass = 'scroll-y',

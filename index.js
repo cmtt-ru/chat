@@ -17,10 +17,6 @@ if (!config) {
   throw new Error("No configuration available. See config.example.js for example.");
 }
 
-redis.on('error', function (err) {
-  console.log("Error " + err);
-});
-
 var redisReady = false;
 redis.on('ready', function (err) {
   redisReady = true;
@@ -43,7 +39,7 @@ function authenticate(data, callback) {
   var salt = config.salt;
   var result = false;
 
-  if (md5.update(JSON.stringify(userData)).update(salt).digest('hex') === data.hash) {
+  if (md5.update(JSON.stringify(userData), 'utf8').update(salt, 'utf8').digest('hex') === data.hash) {
     result = true;
   }
 
@@ -149,7 +145,7 @@ io.on('connection', function (socket) {
     var timestamp = Math.floor(Date.now() / 1000);
     var timestampms = new Date().getTime();
     var messageId = crypto.createHash('md5');
-    messageId = messageId.update(JSON.stringify({ userId: socket.user.id, time: timestampms })).digest('hex');
+    messageId = messageId.update(JSON.stringify({ userId: socket.user.id, time: timestampms }), 'utf8').digest('hex');
 
     var message = {
       id: messageId,

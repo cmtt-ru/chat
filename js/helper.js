@@ -23,7 +23,7 @@ function roomNameNormilize(name) {
 function checkRoomAuthorization(name, salt, hash) {
   var md5 = crypto.createHash('md5');
 
-  if (md5.update(name).update(salt).digest('hex') === hash) {
+  if (md5.update(name, 'utf8').update(salt, 'utf8').digest('hex') === hash) {
     return true;
   }
 
