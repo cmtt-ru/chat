@@ -42,7 +42,7 @@ $(function () {
     notificationPermission = permission;
   });
 
-  function showNotification(title, body, icon) {
+  function sendNotification(title, body, icon) {
     if (notificationPermission === 'granted') {
       var instance = new Notification(title, {
         body: body,
@@ -259,8 +259,8 @@ $(function () {
 
     // message
     socket.on('new message', function (data) {
-      if (!data.history && !document.hasFocus()) {
-        showNotification('TJ Chat', '@' + data.user.name + ': ' + data.message, 'https://static39.cmtt.ru/paper-preview-fox/m/us/musk-longread-1/1bce7f668558-normal.jpg');
+      if (!data.history && !document.hasFocus() && data.message.indexOf('@' + userData.name) >= 0) {
+        sendNotification('Вас упомянули в TJ Chat', data.user.name + ': ' + data.message, 'https://static39.cmtt.ru/paper-preview-fox/m/us/musk-longread-1/1bce7f668558-normal.jpg');
       }
       addChatMessage(data);
     });
