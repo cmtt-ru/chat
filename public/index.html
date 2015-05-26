@@ -24,13 +24,13 @@
             </div>
             <div class="panel-body">
               <ul class="media-list scroll-y" id="chatWindow">
-                  <li class="log">Ожидаем подключение...</li>
+                  <li class="log waiting">Ожидаем подключение...</li>
               </ul>
             </div>
             <div class="panel-footer">
               <div class="form-group" style="margin-bottom: 0;">
                 <div class="input-group">
-                  <input type="text" class="form-control input-sm" id="messageInput" placeholder="Здесь могло быть ваше сообщение...">
+                  <input type="text" class="form-control input-sm" id="messageInput" placeholder="Здесь могло быть ваше сообщение..." autocomplete="off">
                   <span class="input-group-btn">
                     <button class="btn btn-sm btn-default" type="button" id="messageSubmitButton">Отправить</button>
                   </span>
@@ -54,9 +54,7 @@
 
   <script id="message-template" type="text/x-handlebars-template">
     <li class="media message{{id}}" data-id="{{id}}">
-      <div class="pull-right timestamp">
-        <time class="timeago" datetime=""></time>
-      </div>
+      <div class="pull-right timestamp">00:00:00</div>
       <div class="media-left">
         <a href="http://tjournal.ru/users/{{user.id}}" target="_blank">
           <img class="media-object img-circle" src="{{user.image}}" width="24" height="24">
