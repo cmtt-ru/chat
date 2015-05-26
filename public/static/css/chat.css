@@ -25,10 +25,13 @@ a, a:hover, a:active {
     font-weight: bold;
 }
 
-
+.chat-container {
+    position: absolute;
+    height: 90%;
+    overflow-y: scroll;
+}
 
 #chatWindow {
-    overflow-y: scroll;
     position: relative;
     max-height: 100%;
 }

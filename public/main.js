@@ -87,7 +87,7 @@ $(function() {
     }
 
     $('#chatWindow').append(el);
-    $('#chatWindow')[0].scrollTop = $('#chatWindow')[0].scrollHeight;
+    $('.chat-container')[0].scrollTop = $('.chat-container')[0].scrollHeight;
   }
 
   function addChatTyping(data) {
