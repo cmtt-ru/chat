@@ -28,11 +28,7 @@ $(function () {
   var lastTypingTime;
   var $currentInput = $usernameInput.focus();
 
-  var socket = io.connect('http://127.0.0.1:3000/', {
-    'reconnect': true,
-    'reconnection delay': 500,
-    'max reconnection attempts': 10
-  });
+  var socket = io();
 
   var id = Math.floor(Math.random() * (9999 - 1 + 1)) + 1;
   var userData = {
@@ -288,7 +284,6 @@ $(function () {
       user: userData,
       hash: md5(JSON.stringify(userData) + 'euc3Karc4uN9yEk9vA')
     });
-    console.log('U r connected!');
   }); 
   
   socket.on('reconnect', function () {
@@ -296,13 +291,11 @@ $(function () {
       room: 'room1',
       roomHash: 'd3bdb69348a7fde810da2915cc52645a'
     });
-    console.log('U r reconnected!');
   });
   
   socket.on('disconnect', function () {
     socket.removeAllListeners('authenticated');
     socket.removeAllListeners('login');
-    console.log('U r disonnected!');
   });
   
   socket.on('authenticated', function (data) {
@@ -314,27 +307,23 @@ $(function () {
       log(message, {
         prepend: true
       });
-      console.log('u r logged in');
       addParticipantsMessage(data);
     });
 
     // Whenever the server emits 'new message', update the chat body
     socket.on('new message', function (data) {
       addChatMessage(data);
-      console.log('new message');
     });
 
     // Whenever the server emits 'user joined', log it in the chat body
     socket.on('user joined', function (data) {
       log(data.user.name + ' joined');
-      console.log('new user');
       addParticipantsMessage(data);
     });
 
     // Whenever the server emits 'user left', log it in the chat body
     socket.on('user left', function (data) {
       log(data.user.name + ' left');
-      console.log('user left');
       addParticipantsMessage(data);
       removeChatTyping(data);
     });
@@ -358,7 +347,6 @@ $(function () {
     });
 
     socket.on('command response', function (data) {
-      console.log('command response');
       addCommandResponse(data);
     });
   });
