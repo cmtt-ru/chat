@@ -14,10 +14,14 @@ $(function() {
   var template = $("#message-typing-template").html();
   var messageTypingTemplate = Handlebars.compile(template);
 
-  var colorHash = new ColorHash();
   var connected = false;
   var typing = false;
   var lastTypingTime;
+
+  $(window).resize(function(){
+    definePanelHeight();
+  });
+  definePanelHeight();
 
   var id = Math.floor(Math.random() * 9999 + 1);
   userData = {
@@ -34,6 +38,14 @@ $(function() {
 
   function cleanInput(input) {
     return $('<div/>').text(input).text();
+  }
+
+  function definePanelHeight() {
+    var h = $('.baseHeight').height();
+    var hh = $('.baseHeight .panel-heading').outerHeight();
+    var fh = $('.baseHeight .panel-footer').outerHeight();
+
+    $('#chatWindow').css('height', h - hh - fh - 10);
   }
 
   function updateOnlineList(data) {
@@ -82,11 +94,11 @@ $(function() {
     var el = $(el);
     var username = el.find('.media-user-name');
     if (username.length > 0) {
-      username.css('color', colorHash.hex(username.text()));
+      username.css('color', userColor(username.text()));
     }
 
     $('#chatWindow').append(el);
-    $('.chat-container')[0].scrollTop = $('.chat-container')[0].scrollHeight;
+    $('#chatWindow')[0].scrollTop = $('#chatWindow')[0].scrollHeight;
   }
 
   function addChatTyping(data) {
@@ -117,6 +129,35 @@ $(function() {
         }
       }, 500);
     }
+  }
+
+  /**
+   * The function generates a color based on the string.
+   * @param   {String}  string       Base string.
+   * @param   {Integer} chromaticity The less - the darker. 0 - 765.
+   * @returns {String}  Return rgb color for css.
+   */
+  function userColor(string, chromaticity) {
+    chromaticity = chromaticity || 600;
+    var hash = md5(string);
+    var chunks = hash.match(/.{1,2}/g);
+    var sum = function (n) {
+      var count = 0;
+      var i = n.length;
+      while (i--) {
+        count += n[i];
+      }
+      return count;
+    }
+    for (var i = 0; i < chunks.length - 4; i++) {
+      var color = chunks.splice(i, 3).map(function (n) {
+        return parseInt(n, 16);
+      });
+      if (sum(color) <= chromaticity) {
+        return 'rgb(' + color.join(', ') + ')';
+      }
+    }
+    return 'rgb(0, 0, 0)';
   }
 
   // --------------------------------------------------------------
