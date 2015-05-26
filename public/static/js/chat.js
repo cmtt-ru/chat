@@ -204,12 +204,16 @@ $(function() {
     });
   });
 
+  socket.on('connect_error', function() {
+    changeStatus(-1);
   });
 
   socket.on('disconnect', function() {
     connected = false;
+    changeStatus(-1);
 
     socket.removeAllListeners('authenticated');
+    socket.removeAllListeners('connect_error');
 
     log('Соединение с чатом прервано');
   });
@@ -223,6 +227,7 @@ $(function() {
     // login
     socket.on('login', function (data) {
       connected = true;
+      changeStatus(1);
 
       log('Вы вошли в чат!');
       updateOnlineList(data);
@@ -267,9 +272,22 @@ $(function() {
     socket.on('command response', function (data) {
       addCommandResponse(data);
     });
+
+    socket.on('reconnecting', function() {
+      changeStatus(0);
+    });
+
+    socket.on('reconnect_failed', function() {
+      changeStatus(-1);
+    });
+
+    socket.on('reconnect_error', function() {
+      changeStatus(-1);
+    });
   });
 
   socket.on('auth failed', function (data) {
+    changeStatus(-1);
     alert('Access denied');
   });
 });
