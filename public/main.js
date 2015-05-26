@@ -82,13 +82,7 @@ $(function() {
     addMessageElement(messageTemplate(data));
 
     var messageDate = new Date(data.timestamp*1000);
-    var hours = messageDate.getHours();
-    hours = (hours < 10 ? "0" + hours : hours);
-    var minutes = messageDate.getMinutes();
-    minutes = (minutes < 10 ? "0" + minutes : minutes);
-    var seconds = messageDate.getSeconds();
-    seconds = (seconds  < 10 ? "0" + seconds : seconds);
-    $(".message"+data.id+" time.timeago").text(hours + ':' + minutes + ':' + seconds).attr('datetime', messageDate.toISOString()).timeago();
+    $(".message"+data.id+" time.timeago").text(messageDate.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")).attr('datetime', messageDate.toISOString());
   }
 
   function addCommandResponse(data) {
