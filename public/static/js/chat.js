@@ -93,7 +93,7 @@ $(function() {
   }
 
   function addChatMessage(data) {
-    removeChatTyping(data);
+    //removeChatTyping(data);
     data.message = autolinker.link(data.message);
     addMessageElement(messageTemplate(data));
 
@@ -155,6 +155,14 @@ $(function() {
         }
       }, 500);
     }
+  }
+
+  function userJoin(userId) {
+    $('.userOnline' + userId + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500);
+  }
+
+  function userLeft(userId, callback) {
+    $('.userOnline' + userId + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500, 'swing', callback);
   }
 
   // --------------------------------------------------------------
@@ -243,14 +251,15 @@ $(function() {
 
     // user join & left
     socket.on('user joined', function (data) {
-      log(data.user.name + ' присоединился');
       updateOnlineList(data);
+      userJoin(data.user.id);
     });
 
     socket.on('user left', function (data) {
-      log(data.user.name + ' покинул чат');
-      updateOnlineList(data);
-      removeChatTyping(data);
+      userLeft(data.user.id, function() {
+        updateOnlineList(data);
+      });
+      //removeChatTyping(data);
     });
 
     // typing

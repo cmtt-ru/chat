@@ -214,7 +214,6 @@ io.on('connection', function (socket) {
     rooms[socket.room].sendHistory(socket);
   });
 
-  // when the client emits 'typing', we broadcast it to others
   /*socket.on('typing', function () {
     if (!isAuthenticated || isUserBanned(socket.user.id)) {
       return false;
@@ -225,7 +224,6 @@ io.on('connection', function (socket) {
     });
   });
 
-  // when the client emits 'stop typing', we broadcast it to others
   socket.on('stop typing', function () {
     if (!isAuthenticated) {
       return false;
@@ -236,7 +234,6 @@ io.on('connection', function (socket) {
     });
   });*/
 
-  // when the user disconnects.. perform this
   socket.on('disconnect', function () {
     if (!isAuthenticated) {
       return false;
