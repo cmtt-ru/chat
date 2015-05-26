@@ -129,3 +129,13 @@ a, a:hover, a:active {
 .col-bottom {
   vertical-align: bottom;
 }
+
+.scroll, .scroll-y, .scroll-x {
+    -webkit-overflow-scrolling: touch;
+}
+.scroll > *, .scroll-y > *, .scroll-x > * {
+    -webkit-transform : translateZ(0);
+}
+.scroll { overflow: auto; }
+.scroll-y { overflow-y: auto; }
+.scroll-x { overflow-x: auto; }
