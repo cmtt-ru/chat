@@ -85,7 +85,7 @@ $(function() {
     addMessageElement(messageTemplate(data));
 
     var messageDate = new Date(data.timestamp*1000);
-    $(".message"+data.id+" time.timeago").text(messageDate.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1")).attr('datetime', messageDate.toISOString()).timeago();
+    $(".message"+data.id+" time.timeago").text(messageDate.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1"));
   }
 
   function addCommandResponse(data) {
