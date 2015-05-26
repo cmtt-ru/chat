@@ -86,6 +86,10 @@ a, a:hover, a:active {
     color: #aaa;
 }
 
+#chatWindow .media-body a{
+  color: #337ab7;
+}
+
 #messageInput {
     font-size: 14px;
 }
