@@ -60,7 +60,7 @@
           <img class="media-object img-circle" src="{{user.image}}" width="24" height="24">
         </a>
       </div>
-      <div class="media-body"><span class="media-user-name">{{user.name}}</span> {{message}}</div>
+      <div class="media-body"><span class="media-user-name">{{user.name}}</span> <span class="media-message">{{message}}</span></div>
     </li>
   </script>
 
@@ -91,6 +91,7 @@
   <script src="//yastatic.net/jquery/2.1.3/jquery.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/static/js/vendor/handlebars.js"></script>
+  <script src="/static/js/vendor/autolinker.js"></script>
   <script src="/static/js/chat.js"></script>
 </body>
 
