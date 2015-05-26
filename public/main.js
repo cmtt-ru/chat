@@ -24,7 +24,7 @@ $(function() {
   definePanelHeight();
 
   $(document).bind('touchmove', function(e) {
-    e.preventDefault();
+    if (!$('.scrollable').has($(e.target)).length) e.preventDefault();
   });
 
   var id = Math.floor(Math.random() * 9999 + 1);
