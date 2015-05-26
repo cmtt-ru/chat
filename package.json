@@ -4,7 +4,8 @@
   "description": "Chat for TJournal",
   "main": "index.js",
   "contributors": [
-    "Ilya Chekalskiy <ilya@chekalskiy.ru> (https://chekalskiy.ru/)"
+    "Ilya Chekalskiy <ilya@chekalskiy.ru> (https://chekalskiy.ru/)",
+    "Alexey Bystrov <strikeentco@gmail.com> (http://i.strikeentco.com/)"
   ],
   "private": true,
   "license": "MIT",
