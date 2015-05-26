@@ -21,13 +21,31 @@ a, a:hover, a:active {
     bottom:0;
 }
 
+.panel-body {
+    padding: 0;
+}
+
+.panel-body > ul {
+    padding: 5px 15px;
+}
+
+#onlineList .media {
+    overflow: hidden;
+}
+
 #onlineList .media.me {
     font-weight: bold;
 }
 
 #chatWindow {
     position: relative;
-    overflow-y: scroll;
+    overflow-y: auto;
+    margin: 0;
+}
+
+#onlineList {
+    position: relative;
+    overflow-y: auto;
     margin: 0;
 }
 

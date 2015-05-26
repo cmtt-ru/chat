@@ -45,7 +45,8 @@ $(function() {
     var hh = $('.baseHeight .panel-heading').outerHeight();
     var fh = $('.baseHeight .panel-footer').outerHeight();
 
-    $('#chatWindow').css('height', h - hh - fh - 10);
+    $('#chatWindow').css('height', h - hh - fh);
+    $('#onlineList').css('height', h - hh);
   }
 
   function updateOnlineList(data) {
@@ -106,9 +107,7 @@ $(function() {
   }
 
   function removeChatTyping(data) {
-    $('.typing'+data.user.id).fadeOut(function() {
-      $(this).remove();
-    });
+    $('.typing'+data.user.id).remove();
   }
 
   function updateTyping() {
