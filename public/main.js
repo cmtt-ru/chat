@@ -183,6 +183,12 @@ $(function() {
     }
   });
 
+  $('#messageSubmitButton').click(function (event) {
+    sendMessage();
+    socket.emit('stop typing');
+    typing = false;
+  });
+
   $('#messageInput').on('input', function() {
     updateTyping();
   });
