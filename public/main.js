@@ -78,6 +78,7 @@ $(function() {
   }
 
   function addChatMessage(data) {
+    removeChatTyping(data);
     addMessageElement(messageTemplate(data));
   }
 
