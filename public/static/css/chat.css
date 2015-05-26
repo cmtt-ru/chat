@@ -1,0 +1,114 @@
+html,body {
+    height:100%;
+}
+a, a:hover, a:active {
+    color: #333;
+}
+.container-fluid {
+    height:100%;
+}
+.col-full-height .panel {
+    height: 95%;
+    margin: 0;
+}
+
+.col-full-height .panel{
+    position:relative;
+}
+.col-full-height .panel-footer{
+    position:absolute;
+    width:100%;
+    bottom:0;
+}
+
+#onlineList .media.me {
+    font-weight: bold;
+}
+
+
+
+#chatWindow {
+    overflow-y: scroll;
+    position: relative;
+    max-height: 100%;
+}
+
+#chatWindow .media-body {
+    line-height: 20px;
+}
+
+#chatWindow li.log {
+    color: #aaa;
+    text-align: center;
+
+    margin-top: 15px;
+    overflow: hidden;
+    zoom: 1;
+}
+
+#chatWindow li.command-response {
+    color: #aaa;
+
+    margin-top: 15px;
+    overflow: hidden;
+    zoom: 1;
+}
+
+#chatWindow .media-body .media-user-name {
+    font-weight: 600;
+}
+
+#chatWindow .typing .media-body {
+    color: #aaa;
+}
+
+
+
+/* columns of same height styles */
+
+.row-full-height {
+  height: 100%;
+}
+.col-full-height {
+  height: 100%;
+  vertical-align: middle;
+}
+.row-same-height {
+  display: table;
+  width: 100%;
+  /* fix overflow */
+  table-layout: fixed;
+}
+.col-xs-height {
+  display: table-cell;
+  float: none !important;
+}
+
+@media (min-width: 768px) {
+  .col-sm-height {
+    display: table-cell;
+    float: none !important;
+  }
+}
+@media (min-width: 992px) {
+  .col-md-height {
+    display: table-cell;
+    float: none !important;
+  }
+}
+@media (min-width: 1200px) {
+  .col-lg-height {
+    display: table-cell;
+    float: none !important;
+  }
+}
+
+.col-top {
+  vertical-align: top;
+}
+.col-middle {
+  vertical-align: middle;
+}
+.col-bottom {
+  vertical-align: bottom;
+}

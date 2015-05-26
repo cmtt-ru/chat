@@ -1,349 +1,215 @@
-$(function () {
-  var FADE_TIME = 150; // ms
-  var TYPING_TIMER_LENGTH = 400; // ms
-  var COLORS = [
-    '#e21400', '#91580f', '#f8a700', '#f78b00',
-    '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
-    '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
-  ];
+var room = null;
+var roomHash = null;
+var userData = null;
+var userDataHash = null;
 
-  // Initialize varibles
-  var $window = $(window);
-  var $usernameInput = $('.usernameInput'); // Input for username
-  //var $roomInput = $('input:radio[name=room]'); // Input for room
-  var $messages = $('.messages'); // Messages area
-  var $participants = $('.participants');
-  var $participantsCount = $('.participants-count');
-  var $participantsList = $('.participants-list');
-  var $inputMessage = $('.inputMessage'); // Input message input box
+$(function() {
+  // Templates
+  var template = $("#message-template").html();
+  var messageTemplate = Handlebars.compile(template);
 
-  var $loginPage = $('.login.page'); // The d page
-  var $chatPage = $('.chat.page'); // The chatroom page
+  var template = $("#online-user-template").html();
+  var onlineUserTemplate = Handlebars.compile(template);
 
-  // Prompt for setting a username
-  var username;
-  var room;
+  var template = $("#message-typing-template").html();
+  var messageTypingTemplate = Handlebars.compile(template);
+
+  var colorHash = new ColorHash();
   var connected = false;
   var typing = false;
   var lastTypingTime;
-  var $currentInput = $usernameInput.focus();
 
-  var socket = io();
-
-  var id = Math.floor(Math.random() * (9999 - 1 + 1)) + 1;
-  var userData = {
+  var id = Math.floor(Math.random() * 9999 + 1);
+  userData = {
     id: id,
     name: 'User #' + id,
     image: 'https://static39.cmtt.ru/paper-preview-fox/m/us/musk-longread-1/1bce7f668558-normal.jpg'
   };
+  userDataHash = md5(JSON.stringify(userData) + 'euc3Karc4uN9yEk9vA');
 
-  function addParticipantsMessage(data) {
-    var message = '';
+  room = 'room1';
+  roomHash = 'd3bdb69348a7fde810da2915cc52645a';
 
-    if (data.numUsers === 1) {
-      message += 'There\'s 1 participant';
-    } else {
-      message += 'There are ' + data.numUsers + ' participants';
-    }
+  // --------------------------------------------------------------
 
-    $participantsCount.html(message);
-    generateParticipantsList(data.users);
-  }
-
-  // Sets the client's username
-  function setUsername() {
-    username = cleanInput($usernameInput.val().trim());
-    room = 'room1';
-
-    // If the username is valid
-    if (username) {
-      $loginPage.fadeOut();
-      $chatPage.show();
-      $loginPage.off('click');
-      $currentInput = $inputMessage.focus();
-
-      // Tell the server your username
-      socket.emit('add user', {
-        room: room,
-        roomHash: 'd3bdb69348a7fde810da2915cc52645a'
-      });
-    }
-  }
-
-  // Sends a chat message
-  function sendMessage() {
-    var message = $inputMessage.val();
-    // Prevent markup from being injected into the message
-    message = cleanInput(message);
-    // if there is a non-empty message and a socket connection
-    if (message && connected) {
-      $inputMessage.val('');
-
-      // tell server to execute 'new message' and send along one parameter
-      socket.emit('new message', { text: message });
-    }
-  }
-
-  // Log a message
-  function log(message, options) {
-    var $el = $('<li>').addClass('log').text(message);
-    addMessageElement($el, options);
-  }
-
-  // Adds the visual chat message to the message list
-  function addChatMessage(data, options) {
-    // Don't fade the message in if there is an 'X was typing'
-    var $typingMessages = getTypingMessages(data);
-    options = options || {};
-    if ($typingMessages.length !== 0) {
-      options.fade = false;
-      $typingMessages.remove();
-    }
-
-    var $usernameDiv = $('<span class="username"/>')
-      .text(data.user.name)
-      .css('color', getUsernameColor(data.user.name));
-    var $messageBodyDiv = $('<span class="messageBody">')
-      .text(data.message);
-
-    var typingClass = data.typing ? 'typing' : '';
-    var $messageDiv = $('<li class="message"/>')
-      .data('username', data.user.name)
-      .addClass(typingClass)
-      .append($usernameDiv, $messageBodyDiv);
-
-    addMessageElement($messageDiv, options);
-  }
-
-  // Adds the visual chat typing message
-  function addChatTyping(data) {
-    data.typing = true;
-    data.message = 'is typing';
-    addChatMessage(data);
-  }
-
-  // Removes the visual chat typing message
-  function removeChatTyping(data) {
-    getTypingMessages(data).fadeOut(function () {
-      $(this).remove();
-    });
-  }
-
-  // Adds a message element to the messages and scrolls to the bottom
-  // el - The element to add as a message
-  // options.fade - If the element should fade-in (default = true)
-  // options.prepend - If the element should prepend
-  //   all other messages (default = false)
-  function addMessageElement(el, options) {
-    var $el = $(el);
-
-    // Setup default options
-    if (!options) {
-      options = {};
-    }
-    if (typeof options.fade === 'undefined') {
-      options.fade = true;
-    }
-    if (typeof options.prepend === 'undefined') {
-      options.prepend = false;
-    }
-
-    // Apply options
-    if (options.fade) {
-      $el.hide().fadeIn(FADE_TIME);
-    }
-    if (options.prepend) {
-      $messages.prepend($el);
-    } else {
-      $messages.append($el);
-    }
-    $messages[0].scrollTop = $messages[0].scrollHeight;
-  }
-
-  // generate participants list
-  function generateParticipantsList(users) {
-    $participantsList.html('');
-    $.each(users, function (id, element) {
-      var $el = $('<li>').addClass('participant').html('<img src="' + element.image + '" width=20 height=20>').append(' ' + element.name);
-
-      if (element.id == userData.id) {
-        var $itsYouMsg = $('<span>', {
-          html: ' (it\'s you)'
-        });
-
-        $el.addClass('currentUser').append($itsYouMsg);
-      }
-
-      $participantsList.append($el);
-    });
-  }
-
-  // Prevents input from having injected markup
   function cleanInput(input) {
     return $('<div/>').text(input).text();
   }
 
-  // Updates the typing event
+  function updateOnlineList(data) {
+    if (data.numUsers != undefined) {
+      $('.onlineCount').text(parseInt(data.numUsers));
+    }
+
+    if (data.users != undefined) {
+      var list = '';
+
+      $.each(data.users, function(i, v) {
+        list += onlineUserTemplate(v);
+      });
+
+      $('#onlineList').html(list);
+      $('#onlineList .userOnline' + userData.id).addClass('me');
+    }
+  }
+
+  function sendMessage() {
+    var message = $('#messageInput').val();
+    message = cleanInput(message);
+
+    if (message && connected) {
+      $('#messageInput').val('');
+
+      socket.emit('new message', { text: message });
+    }
+  }
+
+  function addChatMessage(data) {
+    addMessageElement(messageTemplate(data));
+  }
+
+  function addCommandResponse(data) {
+    var el = $('<li>').addClass('command-response').text(data.response);
+    addMessageElement(el);
+  }
+
+  function log(message) {
+    var el = $('<li>').addClass('log').text(message);
+    addMessageElement(el);
+  }
+
+  function addMessageElement(el) {
+    var el = $(el);
+    var username = el.find('.media-user-name');
+    if (username.length > 0) {
+      console.log(colorHash.hex(username.text()));
+      username.css('color', colorHash.hex(username.text()));
+    }
+
+    $('#chatWindow').append(el);
+    $('#chatWindow')[0].scrollTop = $('#chatWindow')[0].scrollHeight;
+  }
+
+  function addChatTyping(data) {
+    addMessageElement(messageTypingTemplate(data));
+  }
+
+  function removeChatTyping(data) {
+    $('.typing'+data.user.id).fadeOut(function() {
+      $(this).remove();
+    });
+  }
+
   function updateTyping() {
     if (connected) {
       if (!typing) {
         typing = true;
         socket.emit('typing');
       }
+
       lastTypingTime = (new Date()).getTime();
 
-      setTimeout(function () {
+      setTimeout(function() {
         var typingTimer = (new Date()).getTime();
         var timeDiff = typingTimer - lastTypingTime;
-        if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
+        if (timeDiff >= 500 && typing) {
           socket.emit('stop typing');
           typing = false;
         }
-      }, TYPING_TIMER_LENGTH);
+      }, 500);
     }
   }
 
-  // Gets the 'X is typing' messages of a user
-  function getTypingMessages(data) {
-    return $('.typing.message').filter(function (i) {
-      return $(this).data('username') === data.user.name;
-    });
-  }
-
-  // Gets the color of a username through our hash function
-  function getUsernameColor(username) {
-    // Compute hash code
-    var hash = 7;
-    for (var i = 0; i < username.length; i++) {
-      hash = username.charCodeAt(i) + (hash << 5) - hash;
-    }
-    // Calculate color
-    var index = Math.abs(hash % COLORS.length);
-    return COLORS[index];
-  }
-
-  // Adds the command response
-  function addCommandResponse(data, options) {
-    // Don't fade the message in if there is an 'X was typing'
-    var $typingMessages = getTypingMessages(data);
-    options = options || {};
-    if ($typingMessages.length !== 0) {
-      options.fade = false;
-      $typingMessages.remove();
-    }
-
-    var $messageBodyDiv = $('<span class="commandBody">')
-      .html(data.response);
-
-    var typingClass = data.typing ? 'typing' : '';
-    var $messageDiv = $('<li class="message"/>')
-      .addClass(typingClass)
-      .append($messageBodyDiv);
-
-    addMessageElement($messageDiv, options);
-  }
+  // --------------------------------------------------------------
 
   // Keyboard events
-
-  $window.keydown(function (event) {
-    // Auto-focus the current input when a key is typed
+  $(window).keydown(function(event) {
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
-      $currentInput.focus();
+      $('#messageInput').focus();
     }
-    // When the client hits ENTER on their keyboard
+
     if (event.which === 13) {
-      if (username) {
-        sendMessage();
-        socket.emit('stop typing');
-        typing = false;
-      } else {
-        setUsername();
-      }
+      sendMessage();
+      socket.emit('stop typing');
+      typing = false;
     }
   });
 
-  $inputMessage.on('input', function () {
+  $('#messageInput').on('input', function() {
     updateTyping();
   });
 
-  // Click events
+  // --------------------------------------------------------------
 
-  // Focus input when clicking anywhere on login page
-  $loginPage.click(function () {
-    $currentInput.focus();
-  });
-
-  // Focus input when clicking on the message input's border
-  $inputMessage.click(function () {
-    $inputMessage.focus();
-  });
+  var socket = io();
 
   // Socket events
-  socket.on('connect', function () {
+  socket.on('connect', function() {
     socket.emit('authentication', {
       user: userData,
-      hash: md5(JSON.stringify(userData) + 'euc3Karc4uN9yEk9vA')
-    });
-  }); 
-  
-  socket.on('reconnect', function () {
-    socket.emit('add user', {
-      room: 'room1',
-      roomHash: 'd3bdb69348a7fde810da2915cc52645a'
+      hash: userDataHash
     });
   });
-  
-  socket.on('disconnect', function () {
+
+  socket.on('reconnect', function() {
+    socket.emit('add user', {
+      room: room,
+      roomHash: roomHash
+    });
+  });
+
+  socket.on('disconnect', function() {
     socket.removeAllListeners('authenticated');
     socket.removeAllListeners('login');
   });
-  
-  socket.on('authenticated', function (data) {
-    // Whenever the server emits 'login', log the login message
-    socket.on('login', function (data) {
-      connected = true;
-      // Display the welcome message
-      var message = "Добро пожаловать в чат TJournal!";
-      log(message, {
-        prepend: true
-      });
-      addParticipantsMessage(data);
+
+  socket.on('authenticated', function(data) {
+    socket.emit('add user', {
+      room: room,
+      roomHash: roomHash
     });
 
-    // Whenever the server emits 'new message', update the chat body
+    // login
+    socket.on('login', function (data) {
+      connected = true;
+
+      log("Вы вошли в чат!");
+      updateOnlineList(data);
+    });
+
+    // message
     socket.on('new message', function (data) {
       addChatMessage(data);
     });
 
-    // Whenever the server emits 'user joined', log it in the chat body
+    // user join & left
     socket.on('user joined', function (data) {
-      log(data.user.name + ' joined');
-      addParticipantsMessage(data);
+      log(data.user.name + ' присоединился');
+      updateOnlineList(data);
     });
 
-    // Whenever the server emits 'user left', log it in the chat body
     socket.on('user left', function (data) {
-      log(data.user.name + ' left');
-      addParticipantsMessage(data);
+      log(data.user.name + ' покинул чат');
+      updateOnlineList(data);
       removeChatTyping(data);
     });
 
-    // Whenever the server emits 'typing', show the typing message
+    // typing
     socket.on('typing', function (data) {
       addChatTyping(data);
     });
 
-    // Whenever the server emits 'stop typing', kill the typing message
     socket.on('stop typing', function (data) {
       removeChatTyping(data);
     });
 
+    // ban
     socket.on('banned', function (data) {
-      log('Пользователь ' + data.user + ' заблокирован на ' + data.period + ' минут');
+      log(data.user + ' заблокирован на ' + data.period + ' минут');
     });
 
     socket.on('unbanned', function (data) {
-      log('Пользователь ' + data.user + ' разблокирован');
+      log(data.user + ' разблокирован');
     });
 
     socket.on('command response', function (data) {
@@ -356,3 +222,17 @@ $(function () {
     alert('Access denied');
   });
 });
+
+String.prototype.getHashCode = function() {
+    var hash = 0;
+    if (this.length == 0) return hash;
+    for (var i = 0; i < this.length; i++) {
+        hash = this.charCodeAt(i) + ((hash << 5) - hash);
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+};
+Number.prototype.intToHSL = function() {
+    var shortened = this % 360;
+    return "hsl(" + shortened + ",100%,30%)";
+};

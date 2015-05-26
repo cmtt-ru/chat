@@ -1,34 +1,89 @@
-
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>TJournal Chat</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>TJ Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/static/css/chat.css">
 </head>
 <body>
-  <ul class="pages">
-    <li class="chat page">
-      <div class="chatArea">
-        <ul class="messages"></ul>
-        <ul class="participants">
-          <div class="participants-count"></div>
-          <div class="participants-list"></div>
-        </ul>
-      </div>
-      <input class="inputMessage" placeholder="Type here..."/>
-    </li>
-    <li class="login page">
-      <div class="form">
-        <h3 class="title">What's your nickname?</h3>
-        <input class="usernameInput" type="text" maxlength="14" />
-      </div>
-    </li>
-  </ul>
+    <div class="container-fluid">
+        <div class="row row-full-height">
+            <div class="row-same-height row-full-height">
+                <div class="col-sm-9 col-xs-height col-full-height">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="pull-right visible-xs">Онлайн: <span class="onlineCount">—</span></div>
+                            TJ Chat
+                        </div>
+                        <div class="panel-body">
+                            <ul class="media-list" id="chatWindow">
+                            </ul>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <input type="text" class="form-control input-sm" id="messageInput" placeholder="Здесь могло быть ваше сообщение...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-3 hidden-xs col-xs-height col-full-height">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Онлайн: <span class="onlineCount">—</span></div>
+                        <div class="panel-body">
+                        <ul class="media-list" id="onlineList">
+                        </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-  <script src="/md5.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/main.js"></script>
+    <script id="message-template" type="text/x-handlebars-template">
+    <li class="media" data-id="{{id}}">
+        <div class="media-left">
+            <a href="http://tjournal.ru/users/{{user.id}}" target="_blank">
+                <img class="media-object img-circle" src="{{user.image}}" width="20" height="20">
+            </a>
+        </div>
+        <div class="media-body"><span class="media-user-name">{{user.name}}</span> {{message}}</div>
+    </li>
+    </script>
+
+    <script id="message-typing-template" type="text/x-handlebars-template">
+    <li class="media typing typing{{user.id}}">
+        <div class="media-left">
+            <a href="http://tjournal.ru/users/{{user.id}}" target="_blank">
+                <img class="media-object img-circle" src="{{user.image}}" width="20" height="20">
+            </a>
+        </div>
+        <div class="media-body"><span class="media-user-name">{{user.name}}</span> набирает сообщение...</div>
+    </li>
+    </script>
+
+    <script id="online-user-template" type="text/x-handlebars-template">
+    <li class="media userOnline{{id}}">
+        <div class="media-left media-middle">
+            <a href="http://tjournal.ru/users/{{id}}" target="_blank">
+                <img class="media-object img-circle" src="{{image}}" width="20" height="20">
+            </a>
+        </div>
+        <div class="media-body">
+            <a href="http://tjournal.ru/users/{{id}}" target="_blank">{{name}}</a>
+        </div>
+    </li>
+    </script>
+
+    <script src="//yastatic.net/jquery/2.1.3/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/static/js/vendor/handlebars.js"></script>
+    <script src="/static/js/vendor/color-hash.js"></script>
+    <script src="/md5.min.js"></script>
+    <script src="/main.js"></script>
 </body>
 </html>
