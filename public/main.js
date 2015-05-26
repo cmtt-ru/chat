@@ -92,6 +92,8 @@ $(function() {
   }
 
   function addMessageElement(el) {
+    var scrolledToNewest = ($('#chatWindow').scrollTop() + $('#chatWindow').innerHeight() >= $('#chatWindow')[0].scrollHeight);
+
     var el = $(el);
     var username = el.find('.media-user-name');
     if (username.length > 0) {
@@ -99,7 +101,10 @@ $(function() {
     }
 
     $('#chatWindow').append(el);
-    $('#chatWindow')[0].scrollTop = $('#chatWindow')[0].scrollHeight;
+
+    if (scrolledToNewest) {
+      $('#chatWindow')[0].scrollTop = $('#chatWindow')[0].scrollHeight;
+    }
   }
 
   function addChatTyping(data) {
