@@ -108,12 +108,6 @@ $(function() {
   function addMessageElement(el) {
     var scrolledToNewest = ($('#chatWindow').scrollTop() + $('#chatWindow').innerHeight() >= $('#chatWindow')[0].scrollHeight);
 
-    var el = $(el);
-    var username = el.find('.media-user-name');
-    if (username.length > 0) {
-      //username.css('color', userColor(username.text()));
-    }
-
     $('#chatWindow').append(el);
 
     if (scrolledToNewest) {
@@ -148,35 +142,6 @@ $(function() {
         }
       }, 500);
     }
-  }
-
-  /**
-   * The function generates a color based on the string.
-   * @param   {String}  string       Base string.
-   * @param   {Integer} chromaticity The less - the darker. 0 - 765.
-   * @returns {String}  Return rgb color for css.
-   */
-  function userColor(string, chromaticity) {
-    chromaticity = chromaticity || 600;
-    var hash = md5(string);
-    var chunks = hash.match(/.{1,2}/g);
-    var sum = function (n) {
-      var count = 0;
-      var i = n.length;
-      while (i--) {
-        count += n[i];
-      }
-      return count;
-    }
-    for (var i = 0; i < chunks.length - 4; i++) {
-      var color = chunks.splice(i, 3).map(function (n) {
-        return parseInt(n, 16);
-      });
-      if (sum(color) <= chromaticity) {
-        return 'rgb(' + color.join(', ') + ')';
-      }
-    }
-    return 'rgb(0, 0, 0)';
   }
 
   // --------------------------------------------------------------
