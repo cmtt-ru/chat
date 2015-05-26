@@ -43,6 +43,16 @@ $(function() {
     return $('<div/>').text(input).text();
   }
 
+  function changeStatus(status) {
+    if (status === -1) {
+      $('.lineIndicator').addClass('offline').removeClass('connecting');
+    } else if (status === 0) {
+      $('.lineIndicator').removeClass('offline').addClass('connecting');
+    } else if (status === 1) {
+      $('.lineIndicator').removeClass('offline').removeClass('connecting');
+    }
+  }
+
   function definePanelHeight() {
     var h = $('.baseHeight').height();
     var hh = $('.baseHeight .panel-heading').outerHeight();
@@ -179,6 +189,7 @@ $(function() {
   // Socket events
   socket.on('connect', function() {
     $('#chatWindow .waiting').remove();
+    changeStatus(0);
 
     socket.emit('authentication', {
       user: userData,
@@ -191,6 +202,8 @@ $(function() {
       room: room,
       roomHash: roomHash
     });
+  });
+
   });
 
   socket.on('disconnect', function() {
