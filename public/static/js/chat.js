@@ -5,7 +5,7 @@ var userData = null;
 var userDataHash = null;
 
 function gotMessage(evt) {
-  if (evt.origin === document.location.protocol + '//tj.local' || evt.origin === document.location.protocol + '//tjournal.ru') {
+  if (evt.origin === document.location.protocol + '//tj.local:3000' || evt.origin === document.location.protocol + '//tjournal.ru') {
     var data = $.parseJSON(evt.data);
 
     userData = data.user;
