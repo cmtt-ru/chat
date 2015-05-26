@@ -23,6 +23,10 @@ $(function() {
   });
   definePanelHeight();
 
+  $(document).bind('touchmove', function(e) {
+    e.preventDefault();
+  });
+
   var id = Math.floor(Math.random() * 9999 + 1);
   userData = {
     id: id,
