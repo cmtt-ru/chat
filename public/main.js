@@ -284,8 +284,20 @@ $(function () {
       user: userData,
       hash: md5(JSON.stringify(userData) + 'euc3Karc4uN9yEk9vA')
     });
+  }); 
+  
+  socket.on('reconnect', function () {
+    socket.emit('add user', {
+      room: 'room1',
+      roomHash: 'd3bdb69348a7fde810da2915cc52645a'
+    });
   });
-
+  
+  socket.on('disconnect', function () {
+    socket.removeAllListeners('authenticated');
+    socket.removeAllListeners('login');
+  });
+  
   socket.on('authenticated', function (data) {
     // Whenever the server emits 'login', log the login message
     socket.on('login', function (data) {
@@ -335,7 +347,6 @@ $(function () {
     });
 
     socket.on('command response', function (data) {
-      console.log('command response');
       addCommandResponse(data);
     });
   });
