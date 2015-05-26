@@ -43,6 +43,16 @@ $(function() {
     return $('<div/>').text(input).text();
   }
 
+  function changeStatus(status) {
+    if (status === -1) {
+      $('.lineIndicator').addClass('offline').removeClass('connecting');
+    } else if (status === 0) {
+      $('.lineIndicator').removeClass('offline').addClass('connecting');
+    } else if (status === 1) {
+      $('.lineIndicator').removeClass('offline').removeClass('connecting');
+    }
+  }
+
   function definePanelHeight() {
     var h = $('.baseHeight').height();
     var hh = $('.baseHeight .panel-heading').outerHeight();
@@ -179,6 +189,7 @@ $(function() {
   // Socket events
   socket.on('connect', function() {
     $('#chatWindow .waiting').remove();
+    changeStatus(0);
 
     socket.emit('authentication', {
       user: userData,
@@ -193,10 +204,16 @@ $(function() {
     });
   });
 
+  socket.on('connect_error', function() {
+    changeStatus(-1);
+  });
+
   socket.on('disconnect', function() {
     connected = false;
+    changeStatus(-1);
 
     socket.removeAllListeners('authenticated');
+    socket.removeAllListeners('connect_error');
 
     log('Соединение с чатом прервано');
   });
@@ -210,6 +227,7 @@ $(function() {
     // login
     socket.on('login', function (data) {
       connected = true;
+      changeStatus(1);
 
       log('Вы вошли в чат!');
       updateOnlineList(data);
@@ -254,9 +272,22 @@ $(function() {
     socket.on('command response', function (data) {
       addCommandResponse(data);
     });
+
+    socket.on('reconnecting', function() {
+      changeStatus(0);
+    });
+
+    socket.on('reconnect_failed', function() {
+      changeStatus(-1);
+    });
+
+    socket.on('reconnect_error', function() {
+      changeStatus(-1);
+    });
   });
 
   socket.on('auth failed', function (data) {
+    changeStatus(-1);
     alert('Access denied');
   });
 });
