@@ -93,7 +93,8 @@ a, a:hover, a:active {
 }
 
 #chatWindow .media-body {
-    line-height: 24px;
+    line-height: 16px;
+    padding-top: 4px;
     word-wrap: break-word; word-break: break-word;
 }
 
