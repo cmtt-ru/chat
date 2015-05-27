@@ -227,6 +227,8 @@ $(function() {
 
     $('#messageInput').val(inputText + '[id' + mentionId + '|' + mentionName + '] ');
     $('#messageInput').focus();
+
+    return false;
   });
 
   // --------------------------------------------------------------
