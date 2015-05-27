@@ -73,6 +73,10 @@ a:active {
   padding: 10px 15px;
 }
 
+.user-mention-here {
+    cursor: pointer;
+}
+
 #onlineList .media {
   overflow: hidden;
 }

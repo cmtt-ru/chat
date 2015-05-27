@@ -65,6 +65,11 @@ function postAuthenticate(socket, data) {
   socket.user = userData;
 }
 
+function languanize(number, vars) {
+  var cases = [2, 0, 1, 1, 1, 2];
+  return vars[ (number%100>4 && number%100<20)? 2 : cases[(number%10<5)?number%10:5] ];
+}
+
 /**
  * Бан пользователя
  *
@@ -79,7 +84,7 @@ var userBan = function(userId, minutes, socket) {
 
   ban[userId] = timestamp + seconds;
 
-  io.to(socket.room).emit('banned', { user: userId, period: minutes });
+  io.to(socket.room).emit('banned', { user: rooms[socket.room].users[userId], period: minutes });
 }
 
 var userBannedInit = function(userId) {
@@ -139,6 +144,21 @@ io.on('connection', function (socket) {
     }
 
     if (isUserBanned(socket.user.id)) {
+      var endBan = ban[socket.user.id];
+      var timestamp = Math.floor(Date.now() / 1000);
+      var min = '';
+
+      if (endBan > timestamp) {
+        var mc = Math.ceil((endBan - timestamp) / 60);
+
+        min = ' ещё на ' + mc + languanize(mc, [' минуту', ' минуты', ' минут']);
+      }
+
+      socket.emit('command response', {
+        command: 'new message',
+        response: 'Вы заблокированы' + min
+      });
+
       return false;
     }
 
@@ -264,7 +284,6 @@ var antiflood = setInterval(function(){
   for(var userId in ban) {
     if (ban[userId] !== false && ban[userId] <= timestamp) {
       ban[userId] = false;
-      io.emit('unbanned', { user: userId });
     }
   }
 }, 30000);

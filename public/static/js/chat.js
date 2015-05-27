@@ -49,6 +49,11 @@ $(function() {
     return $('<div/>').text(input).text();
   }
 
+  function languanize(number, vars) {
+    var cases = [2, 0, 1, 1, 1, 2];
+    return vars[ (number%100>4 && number%100<20)? 2 : cases[(number%10<5)?number%10:5] ];
+  }
+
   function changeStatus(status) {
     if (status === -1) {
       $('.lineIndicator').addClass('offline').removeClass('connecting');
@@ -72,12 +77,7 @@ $(function() {
     if (data.numUsers != undefined) {
       var dnum = parseInt(data.numUsers);
 
-      var ch = ' человек';
-      if (dnum < 5 || dnum > 1) {
-        ch = ' человека';
-      }
-
-      $('.onlineCount').text(dnum + ch + ' онлайн');
+      $('.onlineCount').text(dnum + languanize(dnum, [' человек',' человека',' человек']) + ' онлайн');
     }
 
     if (data.user != undefined) {
@@ -311,12 +311,8 @@ $(function() {
     });*/
 
     // ban
-    socket.on('banned', function (data) {
-      log(data.user + ' заблокирован на ' + data.period + ' минут');
-    });
-
-    socket.on('unbanned', function (data) {
-      log(data.user + ' разблокирован');
+    socket.on('banned', function(data) {
+      log(data.user.username + ' заблокирован на ' + data.period + ' ' + languanize(data.period, ['минуту', 'минуты', 'минут']));
     });
 
     // slash command response
