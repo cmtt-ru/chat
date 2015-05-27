@@ -12,6 +12,7 @@ function gotMessage(evt) {
     userDataHash = data.userHash;
     room = data.room;
     roomHash = data.roomHash;
+    userData['username'] = data.username;
 
     socket.open();
   }
