@@ -235,7 +235,7 @@ io.on('connection', function (socket) {
     socket.join(room);
     isAuthenticated = true;
 
-    rooms[room].addUser([socket.user, data.socket], socket);
+    socket.user = rooms[room].addUser([socket.user, data.socket], socket);
 
     userBannedInit(socket.user.id);
 
