@@ -164,6 +164,10 @@ a:active {
   background-repeat: repeat-x;
 }
 
+#messageSubmitButton {
+    outline: none;
+}
+
 .noselect {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
