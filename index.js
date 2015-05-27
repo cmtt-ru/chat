@@ -56,7 +56,7 @@ function authenticate(data, callback) {
  */
 function postAuthenticate(socket, data) {
   var userData = data.user;
-  if (data.username == undefined || data.username.length == 0) {
+  if (data.username == undefined || data.username.trim().length == 0) {
     userData.username = userData.name;
   } else {
     userData.username = data.username.slice(0, 40);
