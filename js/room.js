@@ -83,7 +83,6 @@ Room.prototype.removeUser = function(userId, socket) {
     delete this.users[userId];
     delete this.sockets[userId];
     --this.numUsers;
-  } else {
     socket.broadcast.to(this.name).emit('user left', {
       user: socket.user,
       numUsers: this.getUsersCount()
