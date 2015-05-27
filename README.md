@@ -1,20 +1,25 @@
 # TJ Chat
 
-[![Deployment status from dploy.io](https://cmtt.dploy.io/badge/56046447932552/31955.svg)](http://dploy.io)
+![Powered by](https://img.shields.io/badge/powered%20by-electricity-blue.svg)
+[![MIT Licence](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+[![Deploy status](https://cmtt.dploy.io/badge/56046447932552/31955.svg)](http://tjournal.ru/chat)
 
-## Installing
-```bash
-npm install
-node .
-```
+## How to install
+1. Create config file
+    ```bash
+    cp config.example.js config.js
+    ```
 
-Then you need to change salt in `public/iframe.html`, change domain name in `public/iframe.html` and in function `gotMessage()` of `public/static/js/chat.js`.
+2. Install dependencies
+    ```bash
+    npm install
+    ```
 
-### Create config
-```bash
-cp config.example.js config.js
-```
-Set salt value
-```
-salt: 'your_salt_value'
-```
+3. Change salt in `config.js` and `public/iframe.html`
+4. Change domain name to your (default is `localhost:3000`) in `public/iframe.html` and in function `gotMessage()` of `public/static/js/chat.js`
+5. Start chat
+
+    ```bash
+    node .
+    ```
+6. Go to `http://localhost:3000/iframe.html`

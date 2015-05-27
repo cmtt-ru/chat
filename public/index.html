@@ -1,16 +1,14 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <title>TJ Chat</title>
+  <title>Чат TJ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
   <link rel="stylesheet" href="/static/css/chat.css">
 </head>
-
 <body>
   <div class="container-fluid">
     <div class="row row-full-height">
@@ -19,7 +17,8 @@
           <div class="panel panel-default baseHeight">
             <div class="panel-heading">
               <div class="pull-right visible-xs"><span class="onlineCount">&nbsp;</span></div>
-              TJ Chat
+              <div class="pull-right hidden-xs"><a href="#" class="btn btn-default btn-xs changeFont"><i class="glyphicon glyphicon-text-size"></i></a></div>
+              Чат TJ
             </div>
             <div class="panel-body">
               <ul class="media-list scroll-y" id="chatWindow">
@@ -29,9 +28,9 @@
             <div class="panel-footer">
               <div class="form-group" style="margin-bottom: 0;">
                 <div class="input-group">
-                  <input type="text" class="form-control input-sm" id="messageInput" placeholder="Здесь могло быть ваше сообщение..." autocomplete="off">
+                  <input type="text" class="form-control" id="messageInput" placeholder="Здесь могло быть ваше сообщение..." autocomplete="off">
                   <span class="input-group-btn">
-                    <button class="btn btn-sm btn-default" type="button" id="messageSubmitButton">Отправить</button>
+                    <button class="btn btn-primary" type="button" id="messageSubmitButton">Отправить</button>
                   </span>
                 </div>
               </div>
@@ -47,6 +46,10 @@
             <div class="panel-body">
               <ul class="media-list scroll-y" id="onlineList"></ul>
             </div>
+            <div class="panel-footer noselect" style="cursor:pointer;" id="notifications-panel">
+                <div class="pull-right"><span class="glyphicon glyphicon-bell bell bell-offline"></span></div>
+                <span id="notifications-status">Включить уведомления</span>
+            </div>
           </div>
         </div>
       </div>
@@ -54,11 +57,11 @@
   </div>
 
   <script id="message-template" type="text/x-handlebars-template">
-    <li class="media message{{id}}" data-id="{{id}}">
+    <li class="media message message{{id}}" data-id="{{id}}">
       <div class="pull-right timestamp">00:00:00</div>
       <div class="media-left">
         <a href="http://tjournal.ru/users/{{user.id}}" target="_blank">
-          <img class="media-object img-circle" src="{{user.image}}" width="24" height="24">
+          <img class="media-object img-circle" src="{{user.image}}">
         </a>
       </div>
       <div class="media-body"><span class="media-user-name user-mention-here" data-id="{{user.id}}">{{user.username}}</span> {{{message}}}</div>
@@ -69,7 +72,7 @@
     <li class="media typing typing{{user.id}}">
       <div class="media-left">
         <a href="http://tjournal.ru/users/{{user.id}}" target="_blank">
-          <img class="media-object img-circle" src="{{user.image}}" width="24" height="24">
+          <img class="media-object img-circle" src="{{user.image}}">
         </a>
       </div>
       <div class="media-body"><span class="media-user-name user-mention-here" data-id="{{user.id}}">{{user.username}}</span> набирает сообщение...</div>
@@ -95,5 +98,4 @@
   <script src="/static/js/vendor/autolinker.js"></script>
   <script src="/static/js/chat.js"></script>
 </body>
-
 </html>

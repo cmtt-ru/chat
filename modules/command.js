@@ -37,17 +37,13 @@ function processCommand(data, socket) {
       responseCommand('echo', response, socket);
       break;
 
-    case 'durov':
-      responseCommand('durov', 'Дуров позвонит', socket);
-      break;
-
     case 'ban':
       if (administration[socket.user.id] === true) {
         var userId = parseInt(commandArgs[0]);
         var minutes = parseInt(commandArgs[1]);
 
         if (userId > 0 && minutes > 0) {
-          responseCommand('ban', 'OK. Пользователь №' + userId + ' заблокирован', socket);
+          responseCommand('ban', 'OK. Пользователь c id ' + userId + ' заблокирован', socket);
           if (importedFunctions['userBan'] !== undefined) {
             importedFunctions['userBan'](userId, minutes, socket);
           }

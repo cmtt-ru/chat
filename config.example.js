@@ -1,7 +1,4 @@
-/*
-	config.js — Configuration example.
-*/
-
 module.exports = {
-	salt: ''
+  port: 3000,
+  salt: 'salt'
 };

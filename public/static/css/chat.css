@@ -2,12 +2,21 @@ html,
 body {
   height: 100%;
   overflow: hidden;
+  color: #000;
 }
 
 a,
 a:hover,
 a:active {
-  color: #333;
+  color: #000;
+}
+
+.form-control {
+    color: #000;
+}
+
+.user-mention-here {
+  cursor: pointer;
 }
 
 .container-fluid {
@@ -17,9 +26,6 @@ a:active {
 .col-full-height .panel {
   height: 95%;
   margin: 0;
-}
-
-.col-full-height .panel {
   position: relative;
 }
 
@@ -28,6 +34,130 @@ a:active {
   width: 100%;
   bottom: 0;
 }
+
+.panel-body {
+  padding: 0;
+}
+
+.panel-body > ul {
+  padding: 10px 15px;
+}
+
+#chatWindow .media-left,
+#onlineList .media-left {
+  padding-right: 7px;
+}
+
+#onlineList {
+  position: relative;
+  overflow-y: auto;
+  margin: 0;
+}
+
+#onlineList .media {
+  overflow: hidden;
+}
+
+#onlineList .media.me {
+  font-weight: bold;
+}
+
+#chatWindow {
+  position: relative;
+  overflow-y: auto;
+  margin: 0;
+}
+
+#chatWindow .message .timestamp {
+  color: #aaa;
+  font-size: 12px;
+  line-height: 24px;
+}
+
+#chatWindow .message.reply .media-body {
+  background-color: #f3f3f3;
+}
+
+#chatWindow .media .media-body {
+  line-height: 18px;
+  padding-top: 3px;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+#chatWindow .media .media-body a:hover {
+  border-bottom: 1px solid #000;
+}
+
+#chatWindow .media .media-body a {
+  color: #000;
+  text-decoration: none;
+  border-bottom: 1px solid #ccc;
+}
+
+#chatWindow .media .media-body .media-user-name {
+  font-weight: 600;
+}
+
+#chatWindow .media .media-object {
+  width: 24px;
+  height: 24px;
+}
+
+#chatWindow .typing .media-body {
+  color: #aaa;
+}
+
+#chatWindow li.log {
+  color: #aaa;
+  text-align: center;
+  margin-top: 15px;
+  overflow: hidden;
+  zoom: 1;
+}
+
+#chatWindow li.command-response {
+  color: #aaa;
+  margin-top: 15px;
+  overflow: hidden;
+  zoom: 1;
+}
+
+#chatWindow li:last-of-type {
+  padding-bottom: 10px;
+}
+
+#messageInput {
+  font-size: 14px;
+  line-height: 18px;
+}
+
+#notifications-panel:hover {
+  background-image: linear-gradient(to bottom, #ebebeb 0px, #dedede 100%);
+  background-repeat: repeat-x;
+}
+
+#messageSubmitButton {
+    outline: none;
+}
+
+.larger #chatWindow .media-body {
+    font-size: 16px;
+    line-height: 22px;
+    padding-top: 4px;
+}
+
+.larger #chatWindow .message .media-object {
+  width: 30px;
+  height: 30px;
+}
+
+.larger #chatWindow .media .timestamp {
+  font-size: 14px;
+  line-height: 30px;
+}
+
+/* ------------------------------------------------------ */
 
 .lineIndicator {
   background: #cdeb8e;
@@ -39,7 +169,7 @@ a:active {
   background: linear-gradient(to bottom, #cdeb8e 0%, #a5c956 100%);
   width: 10px;
   height: 10px;
-  display: inline-block;
+  display: block;
   top: 5px;
   position: relative;
   border-radius: 50%;
@@ -65,82 +195,25 @@ a:active {
   background: linear-gradient(to bottom, #f1e767 0%, #feb645 100%);
 }
 
-.panel-body {
-  padding: 0;
+.bell-online {
+  color: #a5c956;
 }
 
-.panel-body > ul {
-  padding: 10px 15px;
-}
-
-#onlineList .media {
-  overflow: hidden;
-}
-
-#onlineList .media.me {
-  font-weight: bold;
-}
-
-#chatWindow {
-  position: relative;
-  overflow-y: auto;
-  margin: 0;
-}
-
-#onlineList {
-  position: relative;
-  overflow-y: auto;
-  margin: 0;
-}
-
-#chatWindow .media .timestamp {
-  color: #aaa;
-  font-size: 12px;
-  line-height: 24px;
-}
-
-#chatWindow .media-body {
-  line-height: 16px;
-  padding-top: 4px;
-  word-wrap: break-word;
-  word-break: break-word;
-}
-
-#chatWindow li.log {
-  color: #aaa;
-  text-align: center;
-  margin-top: 15px;
-  overflow: hidden;
-  zoom: 1;
-}
-
-#chatWindow li.command-response {
-  color: #aaa;
-  margin-top: 15px;
-  overflow: hidden;
-  zoom: 1;
-}
-
-#chatWindow .media-body .media-user-name {
-  font-weight: 600;
-}
-
-#chatWindow .typing .media-body {
+.bell-offline {
   color: #aaa;
 }
 
-#chatWindow .media-body a {
-  color: #337ab7;
+/* ------------------------------------------------------ */
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-#chatWindow li:last-of-type {
-  padding-bottom: 10px;
-}
-
-#messageInput {
-  font-size: 14px;
-  line-height: 18px;
-}
 /* columns of same height styles */
 
 .row-full-height {
