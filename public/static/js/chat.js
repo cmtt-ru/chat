@@ -224,7 +224,8 @@ $(function() {
   socket.on('reconnect', function() {
     socket.emit('add user', {
       room: room,
-      roomHash: roomHash
+      roomHash: roomHash,
+      socket: socket.io.engine.id
     });
   });
 
@@ -245,7 +246,8 @@ $(function() {
   socket.on('authenticated', function() {
     socket.emit('add user', {
       room: room,
-      roomHash: roomHash
+      roomHash: roomHash,
+      socket: socket.io.engine.id
     });
 
     // login
