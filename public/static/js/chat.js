@@ -30,7 +30,9 @@ $(function() {
   var template = $("#message-typing-template").html();
   var messageTypingTemplate = Handlebars.compile(template);
 
-  var autolinker = new Autolinker();
+  var autolinker = new Autolinker({
+    twitter: false
+  });
 
   var connected = false;
   var typing = false;
@@ -201,6 +203,12 @@ $(function() {
     sendMessage();
     //socket.emit('stop typing');
     typing = false;
+  });
+
+  $('.message-nickname').click(function (event) {
+    var self = this;
+
+
   });
 
   /*$('#messageInput').on('input', function() {
