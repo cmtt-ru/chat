@@ -60,7 +60,7 @@ $(function(){
         $('.center-block .inputUsername').val(localStorage.getItem('lastUsedUsername'));
     }
 
-    $('.center-block .inputUsername').on('keydown', function(e){
+    $('.center-block .inputUsername').on('keydown', function(event){
         if (event.which === 13) {
             if ($('.center-block .inputUsername').val() != "") {
                 loginData.username = $('.center-block .inputUsername').val();
