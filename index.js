@@ -1,5 +1,3 @@
-
-// Setup basic express server
 var express = require('express');
 var app = express();
 var crypto = require('crypto');
@@ -12,13 +10,19 @@ var Room = require('./js/room');
 var helper = require('./js/helper');
 
 // Check for config availability
-
 if (!config) {
   throw new Error("No configuration available. See config.example.js for example.");
 }
 
+server.listen(port, function() {
+  console.log('Server listening at port %d', port);
+});
+
+// Routing
+app.use(express.static(__dirname + '/public'));
+
 var redisReady = false;
-redis.on('ready', function (err) {
+redis.on('ready', function(err) {
   redisReady = true;
 });
 
@@ -104,13 +108,6 @@ var isUserBanned = function(userId) {
 
 var command = require('./js/command');
 command.importFunction('userBan', userBan);
-
-server.listen(port, function () {
-  console.log('Server listening at port %d', port);
-});
-
-// Routing
-app.use(express.static(__dirname + '/public'));
 
 // Chatrooms
 var rooms = {};
@@ -207,7 +204,7 @@ io.on('connection', function (socket) {
 
     socket.emit('login', {
       numUsers: rooms[room].getUsersCount(),
-      users: rooms[room].getUsers()
+      user: socket.user
     });
 
     // History of last messages in chat
