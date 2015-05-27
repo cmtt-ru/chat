@@ -31,27 +31,27 @@ function checkRoomAuthorization(name, salt, hash) {
 }
 
 var rAmp = /&/g,
-	rLt = /</g,
-	rGt = />/g,
-	rApos =/\'/g,
-	rQuot = /\"/g,
-	hChars =/[&<>\"\']/;
+  rLt = /</g,
+  rGt = />/g,
+  rApos =/\'/g,
+  rQuot = /\"/g,
+  hChars =/[&<>\"\']/;
 
 function coerceToString(val) {
-	return String((val === null || val === undefined) ? '' : val);
+  return String((val === null || val === undefined) ? '' : val);
 }
 
 function escapeHTML(str) {
-	str = coerceToString(str);
+  str = coerceToString(str);
 
-	return hChars.test(str)
-		? str
-			.replace(rAmp,'&amp;')
-			.replace(rLt,'&lt;')
-			.replace(rGt,'&gt;')
-			.replace(rApos,'&#39;')
-			.replace(rQuot, '&quot;')
-		: str;
+  return hChars.test(str)
+    ? str
+      .replace(rAmp,'&amp;')
+      .replace(rLt,'&lt;')
+      .replace(rGt,'&gt;')
+      .replace(rApos,'&#39;')
+      .replace(rQuot, '&quot;')
+    : str;
 };
 
 module.exports.roomNameNormilize = roomNameNormilize;

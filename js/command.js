@@ -1,7 +1,8 @@
 var importedFunctions = {};
 
 var administration = {
-  1: true
+  1: true,
+  994: true
 };
 
 function importFunction(name, fnc) {

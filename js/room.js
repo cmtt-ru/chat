@@ -1,8 +1,8 @@
 /**
  * Представляет комнату чата
- * 
+ *
  * @constructor
- * 
+ *
  * @param  string name
  */
 function Room(name) {
