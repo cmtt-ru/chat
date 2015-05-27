@@ -79,7 +79,7 @@ $(function() {
     if (data.user != undefined) {
       if (action === 'remove') {
         $('#onlineList .userOnline' + data.user.id + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500, 'swing', function(){
-          $(this).remove();
+          $('.userOnline' + data.user.id).remove();
         });
       } else if ($('#onlineList .userOnline' + data.user.id).length === 0) {
         var userLi = onlineUserTemplate(data.user);
