@@ -61,7 +61,7 @@
           <img class="media-object img-circle" src="{{user.image}}" width="24" height="24">
         </a>
       </div>
-      <div class="media-body"><span class="media-user-name" data-id="{{user.id}}">{{user.username}}</span> {{{message}}}</div>
+      <div class="media-body"><span class="media-user-name user-mention-here" data-id="{{user.id}}">{{user.username}}</span> {{{message}}}</div>
     </li>
   </script>
 
@@ -72,7 +72,7 @@
           <img class="media-object img-circle" src="{{user.image}}" width="24" height="24">
         </a>
       </div>
-      <div class="media-body"><span class="media-user-name" data-id="{{user.id}}">{{user.username}}</span> набирает сообщение...</div>
+      <div class="media-body"><span class="media-user-name user-mention-here" data-id="{{user.id}}">{{user.username}}</span> набирает сообщение...</div>
     </li>
   </script>
 
@@ -84,7 +84,7 @@
         </a>
       </div>
       <div class="media-body">
-        <a href="http://tjournal.ru/users/{{id}}" target="_blank">{{username}}</a>
+        <a href="http://tjournal.ru/users/{{id}}" target="_blank" class="user-mention-here" data-id="{{id}}">{{username}}</a>
       </div>
     </li>
   </script>

@@ -214,7 +214,7 @@ $(function() {
   });*/
 
   // Mentions
-  $('#chatWindow').on('click', '.media-user-name', function (event) {
+  $('#chatWindow').on('click', '.user-mention-here', function (event) {
     var mentionName = $(this).text();
     var mentionId = $(this).attr('data-id');
     var inputText = $('#messageInput').val();
