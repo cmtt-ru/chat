@@ -1,14 +1,15 @@
 /**
  * Представляет комнату чата
- * 
+ *
  * @constructor
- * 
+ *
  * @param  string name
  */
 function Room(name) {
   this.name = name;
   this.users = {};
   this.history = [];
+  this.sockets = {};
   this.numUsers = 0;
 }
 
@@ -18,6 +19,16 @@ function Room(name) {
  */
 Room.prototype.getUsers = function() {
   return this.users;
+}
+
+/**
+ * Проверяет, есть ли пользователь в комнате
+ * @return boolean
+ */
+Room.prototype.hasUser = function(id) {
+  for (var user in this.users)
+    if (user.id == id) return true;
+  return false;
 }
 
 /**
@@ -55,17 +66,20 @@ Room.prototype.sendHistory = function(socket) {
 
 /**
  * Добавляем пользователя в комнату
- * @param  object user
+ * @param  array data
  * @param  object socket
  */
-Room.prototype.addUser = function(user, socket) {
-  this.users[user.id] = user;
-  ++this.numUsers;
+Room.prototype.addUser = function(data, socket) {
+  if (!this.users[data[0].id]) {
+    this.users[data[0].id] = data[0];
+    this.sockets[data[0].id] = [];
+    ++this.numUsers;
+  }
+  this.sockets[data[0].id].push(data[1]);
 
   socket.broadcast.to(this.name).emit('user joined', {
     user: socket.user,
-    numUsers: this.getUsersCount(),
-    users: this.getUsers()
+    numUsers: this.getUsersCount()
   });
 }
 
@@ -75,14 +89,16 @@ Room.prototype.addUser = function(user, socket) {
  * @param  object socket
  */
 Room.prototype.removeUser = function(userId, socket) {
-  delete this.users[userId];
-  --this.numUsers;
-
-  socket.broadcast.to(this.name).emit('user left', {
-    user: socket.user,
-    numUsers: this.getUsersCount(),
-    users: this.getUsers()
-  });
+  this.sockets[userId].shift();
+  if (!this.sockets[userId].length) {
+    delete this.users[userId];
+    delete this.sockets[userId];
+    --this.numUsers;
+    socket.broadcast.to(this.name).emit('user left', {
+      user: socket.user,
+      numUsers: this.getUsersCount()
+    });
+  }
 }
 
 module.exports = Room;

@@ -8,6 +8,8 @@ npm install
 node .
 ```
 
+Then you need to change salt in `public/iframe.html`, change domain name in `public/iframe.html` and in function `gotMessage()` of `public/static/js/chat.js`.
+
 ### Create config
 ```bash
 cp config.example.js config.js

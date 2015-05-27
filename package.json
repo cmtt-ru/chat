@@ -1,11 +1,16 @@
 {
-  "name": "socket.io-chat",
-  "version": "0.0.0",
-  "description": "A simple chat client using socket.io",
+  "name": "tjournal-chat",
+  "version": "0.1.0",
+  "description": "Chat for TJournal",
   "main": "index.js",
-  "author": "Grant Timmerman",
+  "contributors": [
+    "Ilya Chekalskiy <ilya@chekalskiy.ru> (https://chekalskiy.ru/)",
+    "Alexey Bystrov <strikeentco@gmail.com> (http://i.strikeentco.com/)",
+    "David Frenkel <frenkdave@gmail.com> (http://merrik.ru)",
+    "Arseniy Maximov <localhost@kern0.ru> (http://kern0.ru)"
+  ],
   "private": true,
-  "license": "BSD",
+  "license": "MIT",
   "dependencies": {
     "express": "3.4.8",
     "socket.io": "1.3.5",

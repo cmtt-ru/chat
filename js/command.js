@@ -1,7 +1,8 @@
 var importedFunctions = {};
 
 var administration = {
-  1: true
+  1: true,
+  994: true
 };
 
 function importFunction(name, fnc) {
@@ -36,17 +37,13 @@ function processCommand(data, socket) {
       responseCommand('echo', response, socket);
       break;
 
-    case 'durov':
-      responseCommand('durov', 'Дуров позвонит', socket);
-      break;
-
     case 'ban':
       if (administration[socket.user.id] === true) {
         var userId = parseInt(commandArgs[0]);
         var minutes = parseInt(commandArgs[1]);
 
         if (userId > 0 && minutes > 0) {
-          responseCommand('ban', 'OK. Пользователь №' + userId + ' заблокирован', socket);
+          responseCommand('ban', 'OK. Пользователь c id ' + userId + ' заблокирован', socket);
           if (importedFunctions['userBan'] !== undefined) {
             importedFunctions['userBan'](userId, minutes, socket);
           }
@@ -58,11 +55,9 @@ function processCommand(data, socket) {
 
     case 'help':
     default:
-      var response = '> /help<br>' +
-          'Доступные команды:<br>' +
+      var response = 'Доступные команды:<br>' +
           '/echo — эхо<br>' +
-          '/help — справка по командам<br>' +
-          '/ban — блокировка аккаунта';
+          '/shrug — Пожималкин';
       responseCommand('help', response, socket);
   }
 }
