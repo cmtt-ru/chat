@@ -5,7 +5,15 @@ var userData = null;
 var userDataHash = null;
 var username = "default";
 var notificationPermission;
-var notificationStatus = (localStorage) ? localStorage.getItem("notificationStatus") : false;
+
+var ls;
+try {
+  ls = 'localStorage' in window && window['localStorage'] !== null;
+} catch (e) {
+  ls = false;
+}
+
+var notificationStatus = (ls && ls.getItem("notificationsStatus") == 'true') ? true : false;
 
 function gotMessage(evt) {
   if (evt.origin === document.location.protocol + '//localhost:3000' || evt.origin === document.location.protocol + '//tjournal.ru') {
@@ -21,7 +29,7 @@ function gotMessage(evt) {
   }
 }
 
-$(function() {
+$(function () {
   // Templates
   var template = $("#message-template").html();
   var messageTemplate = Handlebars.compile(template);
@@ -42,7 +50,7 @@ $(function() {
 
   var $notificationsStatus = $('#notifications-status');
 
-  $(window).resize(function(){
+  $(window).resize(function () {
     definePanelHeight();
   });
   definePanelHeight();
@@ -77,7 +85,8 @@ $(function() {
 
       return false;
     } else if (notificationStatus && notificationPermission !== 'granted') {
-      $notificationsStatus.text('Включите оповещения в браузере');
+      $notificationsStatus.text('Оповещения блокируются браузером');
+      requestNotificationsPermission();
     } else {
       return false;
     }
@@ -91,7 +100,7 @@ $(function() {
 
   function languanize(number, vars) {
     var cases = [2, 0, 1, 1, 1, 2];
-    return vars[ (number%100>4 && number%100<20)? 2 : cases[(number%10<5)?number%10:5] ];
+    return vars[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
   }
 
   function changeStatus(status) {
@@ -117,26 +126,42 @@ $(function() {
     if (data.numUsers != undefined) {
       var dnum = parseInt(data.numUsers);
 
-      $('.onlineCount').text(dnum + languanize(dnum, [' человек',' человека',' человек']) + ' онлайн');
+      $('.onlineCount').text(dnum + languanize(dnum, [' человек', ' человека', ' человек']) + ' онлайн');
     }
 
     if (data.user != undefined) {
       if (action === 'remove') {
-        $('#onlineList .userOnline' + data.user.id + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500, 'swing', function(){
+        $('#onlineList .userOnline' + data.user.id + ' .media-object').animate({
+          opacity: 0.1
+        }, 500).animate({
+          opacity: 1
+        }, 500).animate({
+          opacity: 0.1
+        }, 500).animate({
+          opacity: 1
+        }, 500, 'swing', function () {
           $('.userOnline' + data.user.id).remove();
         });
       } else if ($('#onlineList .userOnline' + data.user.id).length === 0) {
         var userLi = onlineUserTemplate(data.user);
         $('#onlineList').append(userLi);
 
-        $('#onlineList .userOnline' + data.user.id + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500);
+        $('#onlineList .userOnline' + data.user.id + ' .media-object').animate({
+          opacity: 0.1
+        }, 500).animate({
+          opacity: 1
+        }, 500).animate({
+          opacity: 0.1
+        }, 500).animate({
+          opacity: 1
+        }, 500);
       }
     }
 
     if (data.users != undefined) {
       var list = '';
 
-      $.each(data.users, function(i, v) {
+      $.each(data.users, function (i, v) {
         list += onlineUserTemplate(v);
       });
 
@@ -153,7 +178,9 @@ $(function() {
     if (message && connected) {
       $('#messageInput').val('');
 
-      socket.emit('new message', { text: message });
+      socket.emit('new message', {
+        text: message
+      });
     }
   }
 
@@ -164,8 +191,8 @@ $(function() {
       data.message = autolinker.link(data.message);
       addMessageElement(messageTemplate(data));
 
-      var messageDate = new Date(data.timestamp*1000);
-      $(".message"+data.id+" .timestamp").text(messageDate.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1"));
+      var messageDate = new Date(data.timestamp * 1000);
+      $(".message" + data.id + " .timestamp").text(messageDate.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1"));
     }
   }
 
@@ -212,7 +239,7 @@ $(function() {
   }
 
   function removeChatTyping(data) {
-    $('.typing'+data.user.id).remove();
+    $('.typing' + data.user.id).remove();
   }
 
   function updateTyping() {
@@ -225,7 +252,7 @@ $(function() {
 
       lastTypingTime = (new Date()).getTime();
 
-      setTimeout(function() {
+      setTimeout(function () {
         var typingTimer = (new Date()).getTime();
         var timeDiff = typingTimer - lastTypingTime;
         if (timeDiff >= 500 && typing) {
@@ -237,6 +264,8 @@ $(function() {
   }
 
   function requestNotificationsPermission(callback) {
+    callback = callback || function () {};
+
     Notification.requestPermission(function (permission) {
       notificationPermission = permission;
 
@@ -274,12 +303,30 @@ $(function() {
         $notificationsStatus.text('Оповещения включены');
       }
     }
+    if (ls) ls.setItem('notificationsStatus', notificationStatus);
   }
+
+  function newMessageTitle() {
+    var isOldTitle = true;
+    var oldTitle = document.title;
+    var newTitle = "Новое сообщение";
+    var interval = null;
+    function changeTitle() {
+        document.title = isOldTitle ? oldTitle : newTitle;
+        isOldTitle = !isOldTitle;
+    }
+    interval = setInterval(changeTitle, 700);
+
+    $(window).focus(function () {
+        clearInterval(interval);
+        $("title").text(oldTitle);
+    });
+  };
 
   // --------------------------------------------------------------
 
   // Keyboard events
-  $(window).keydown(function(event) {
+  $(window).keydown(function (event) {
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
       $('#messageInput').focus();
     }
@@ -302,7 +349,7 @@ $(function() {
   });*/
 
   // Mentions
-  $('body').on('click', '.user-mention-here', function() {
+  $('body').on('click', '.user-mention-here', function () {
     var mentionName = $(this).text();
     var mentionId = $(this).attr('data-id');
     var inputText = $('#messageInput').val();
@@ -329,7 +376,7 @@ $(function() {
   });
 
   // Socket events
-  socket.on('connect', function() {
+  socket.on('connect', function () {
     $('#chatWindow .waiting').remove();
     changeStatus(0);
 
@@ -340,7 +387,7 @@ $(function() {
     });
   });
 
-  socket.on('reconnect', function() {
+  socket.on('reconnect', function () {
     socket.emit('add user', {
       room: room,
       roomHash: roomHash,
@@ -348,11 +395,11 @@ $(function() {
     });
   });
 
-  socket.on('connect_error', function() {
+  socket.on('connect_error', function () {
     changeStatus(-1);
   });
 
-  socket.on('disconnect', function() {
+  socket.on('disconnect', function () {
     connected = false;
     changeStatus(-1);
 
@@ -362,7 +409,7 @@ $(function() {
     log('Соединение с чатом прервано');
   });
 
-  socket.on('authenticated', function() {
+  socket.on('authenticated', function () {
     socket.emit('add user', {
       room: room,
       roomHash: roomHash,
@@ -384,6 +431,7 @@ $(function() {
         var parsedMessage = parseMentions(data.message, true);
         sendNotification('Вас упомянули в чате', data.user.username + ': ' + parsedMessage, data.user.image);
       }
+
       addChatMessage(data);
     });
 
@@ -407,7 +455,7 @@ $(function() {
     });*/
 
     // ban
-    socket.on('banned', function(data) {
+    socket.on('banned', function (data) {
       log(data.user.username + ' заблокирован на ' + data.period + ' ' + languanize(data.period, ['минуту', 'минуты', 'минут']));
     });
 
@@ -416,15 +464,15 @@ $(function() {
       addCommandResponse(data);
     });
 
-    socket.on('reconnecting', function() {
+    socket.on('reconnecting', function () {
       changeStatus(0);
     });
 
-    socket.on('reconnect_failed', function() {
+    socket.on('reconnect_failed', function () {
       changeStatus(-1);
     });
 
-    socket.on('reconnect_error', function() {
+    socket.on('reconnect_error', function () {
       changeStatus(-1);
     });
   });
@@ -437,96 +485,101 @@ $(function() {
 
 if (window.addEventListener) {
   window.addEventListener("message", gotMessage, false);
-}
-else {
+} else {
   window.attachEvent("onmessage", gotMessage);
 }
 
 // Scrolling on iOS
 (function registerScrolling($) {
-    var prevTouchPosition = {},
-        scrollYClass = 'scroll-y',
-        scrollXClass = 'scroll-x',
-        searchTerms = '.' + scrollYClass + ', .' + scrollXClass;
+  var prevTouchPosition = {},
+    scrollYClass = 'scroll-y',
+    scrollXClass = 'scroll-x',
+    searchTerms = '.' + scrollYClass + ', .' + scrollXClass;
 
-    $('body').on('touchstart', function (e) {
-        var $scroll = $(e.target).closest(searchTerms),
-            targetTouch = e.originalEvent.targetTouches[0];
-
-        // Store previous touch position if within a scroll element
-        prevTouchPosition = $scroll.length ? { x: targetTouch.pageX, y: targetTouch.pageY } : {};
-    });
-
-$('body').on('touchmove', function (e) {
+  $('body').on('touchstart', function (e) {
     var $scroll = $(e.target).closest(searchTerms),
-        targetTouch = e.originalEvent.targetTouches[0];
+      targetTouch = e.originalEvent.targetTouches[0];
+
+    // Store previous touch position if within a scroll element
+    prevTouchPosition = $scroll.length ? {
+      x: targetTouch.pageX,
+      y: targetTouch.pageY
+    } : {};
+  });
+
+  $('body').on('touchmove', function (e) {
+    var $scroll = $(e.target).closest(searchTerms),
+      targetTouch = e.originalEvent.targetTouches[0];
 
     if (prevTouchPosition && $scroll.length) {
-        // Set move helper and update previous touch position
-        var move = {
-            x: targetTouch.pageX - prevTouchPosition.x,
-            y: targetTouch.pageY - prevTouchPosition.y
-        };
-        prevTouchPosition = { x: targetTouch.pageX, y: targetTouch.pageY };
+      // Set move helper and update previous touch position
+      var move = {
+        x: targetTouch.pageX - prevTouchPosition.x,
+        y: targetTouch.pageY - prevTouchPosition.y
+      };
+      prevTouchPosition = {
+        x: targetTouch.pageX,
+        y: targetTouch.pageY
+      };
 
-        // Check for scroll-y or scroll-x classes
-        if ($scroll.hasClass(scrollYClass)) {
-            var scrollHeight = $scroll[0].scrollHeight,
-                outerHeight = $scroll.outerHeight(),
+      // Check for scroll-y or scroll-x classes
+      if ($scroll.hasClass(scrollYClass)) {
+        var scrollHeight = $scroll[0].scrollHeight,
+          outerHeight = $scroll.outerHeight(),
 
-                atUpperLimit = ($scroll.scrollTop() === 0),
-                atLowerLimit = (scrollHeight - $scroll.scrollTop() === outerHeight);
+          atUpperLimit = ($scroll.scrollTop() === 0),
+          atLowerLimit = (scrollHeight - $scroll.scrollTop() === outerHeight);
 
-            if (scrollHeight > outerHeight) {
-                // If at either limit move 1px away to allow normal scroll behavior on future moves,
-                // but stop propagation on this move to remove limit behavior bubbling up to body
-                if (move.y > 0 && atUpperLimit) {
-                    $scroll.scrollTop(1);
-                    e.stopPropagation();
-                } else if (move.y < 0 && atLowerLimit) {
-                    $scroll.scrollTop($scroll.scrollTop() - 1);
-                    e.stopPropagation();
-                }
+        if (scrollHeight > outerHeight) {
+          // If at either limit move 1px away to allow normal scroll behavior on future moves,
+          // but stop propagation on this move to remove limit behavior bubbling up to body
+          if (move.y > 0 && atUpperLimit) {
+            $scroll.scrollTop(1);
+            e.stopPropagation();
+          } else if (move.y < 0 && atLowerLimit) {
+            $scroll.scrollTop($scroll.scrollTop() - 1);
+            e.stopPropagation();
+          }
 
-                // If only moving right or left, prevent bad scroll.
-                if(Math.abs(move.x) > 0 && Math.abs(move.y) < 3){
-                  e.preventDefault()
-                }
+          // If only moving right or left, prevent bad scroll.
+          if (Math.abs(move.x) > 0 && Math.abs(move.y) < 3) {
+            e.preventDefault()
+          }
 
-                // Normal scrolling behavior passes through
-            } else {
-                // No scrolling / adjustment when there is nothing to scroll
-                e.preventDefault();
-            }
-        } else if ($scroll.hasClass(scrollXClass)) {
-            var scrollWidth = $scroll[0].scrollWidth,
-                outerWidth = $scroll.outerWidth(),
-
-                atLeftLimit = $scroll.scrollLeft() === 0,
-                atRightLimit = scrollWidth - $scroll.scrollLeft() === outerWidth;
-
-            if (scrollWidth > outerWidth) {
-                if (move.x > 0 && atLeftLimit) {
-                    $scroll.scrollLeft(1);
-                    e.stopPropagation();
-                } else if (move.x < 0 && atRightLimit) {
-                    $scroll.scrollLeft($scroll.scrollLeft() - 1);
-                    e.stopPropagation();
-                }
-                // If only moving up or down, prevent bad scroll.
-                if(Math.abs(move.y) > 0 && Math.abs(move.x) < 3){
-                  e.preventDefault();
-                }
-
-                // Normal scrolling behavior passes through
-            } else {
-                // No scrolling / adjustment when there is nothing to scroll
-                e.preventDefault();
-            }
+          // Normal scrolling behavior passes through
+        } else {
+          // No scrolling / adjustment when there is nothing to scroll
+          e.preventDefault();
         }
+      } else if ($scroll.hasClass(scrollXClass)) {
+        var scrollWidth = $scroll[0].scrollWidth,
+          outerWidth = $scroll.outerWidth(),
+
+          atLeftLimit = $scroll.scrollLeft() === 0,
+          atRightLimit = scrollWidth - $scroll.scrollLeft() === outerWidth;
+
+        if (scrollWidth > outerWidth) {
+          if (move.x > 0 && atLeftLimit) {
+            $scroll.scrollLeft(1);
+            e.stopPropagation();
+          } else if (move.x < 0 && atRightLimit) {
+            $scroll.scrollLeft($scroll.scrollLeft() - 1);
+            e.stopPropagation();
+          }
+          // If only moving up or down, prevent bad scroll.
+          if (Math.abs(move.y) > 0 && Math.abs(move.x) < 3) {
+            e.preventDefault();
+          }
+
+          // Normal scrolling behavior passes through
+        } else {
+          // No scrolling / adjustment when there is nothing to scroll
+          e.preventDefault();
+        }
+      }
     } else {
-        // Prevent scrolling on non-scrolling elements
-        e.preventDefault();
+      // Prevent scrolling on non-scrolling elements
+      e.preventDefault();
     }
-});
+  });
 })(jQuery);
