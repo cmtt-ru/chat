@@ -124,11 +124,11 @@ var rooms = {};
 var flood = {};
 var ban = {};
 
-io.on('connection', function (socket) {
+io.on('connection', function(socket) {
   var isAuthenticated = false;
 
   // when the client emits 'new message', this listens and executes
-  socket.on('new message', function (data) {
+  socket.on('new message', function(data) {
     if (!isAuthenticated) {
       return false;
     }
@@ -200,7 +200,7 @@ io.on('connection', function (socket) {
   });
 
   // when the client emits 'add user', this listens and executes
-  socket.on('add user', function (data) {
+  socket.on('add user', function(data) {
     if (data.room == undefined || data.roomHash == undefined) {
       return false;
     }
@@ -248,7 +248,7 @@ io.on('connection', function (socket) {
     rooms[socket.room].sendHistory(socket);
   });
 
-  /*socket.on('typing', function () {
+  /*socket.on('typing', function() {
     if (!isAuthenticated || isUserBanned(socket.user.id)) {
       return false;
     }
@@ -258,7 +258,7 @@ io.on('connection', function (socket) {
     });
   });
 
-  socket.on('stop typing', function () {
+  socket.on('stop typing', function() {
     if (!isAuthenticated) {
       return false;
     }
@@ -268,7 +268,7 @@ io.on('connection', function (socket) {
     });
   });*/
 
-  socket.on('disconnect', function () {
+  socket.on('disconnect', function() {
     if (!isAuthenticated) {
       return false;
     }

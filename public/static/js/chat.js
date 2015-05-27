@@ -29,7 +29,7 @@ function gotMessage(evt) {
   }
 }
 
-$(function () {
+$(function() {
   // Templates
   var template = $("#message-template").html();
   var messageTemplate = Handlebars.compile(template);
@@ -50,7 +50,7 @@ $(function () {
 
   var $notificationsStatus = $('#notifications-status');
 
-  $(window).resize(function () {
+  $(window).resize(function() {
     definePanelHeight();
   });
   definePanelHeight();
@@ -58,7 +58,7 @@ $(function () {
   /* Get notifications permissions */
   var Notification = window.Notification || window.mozNotification || window.webkitNotification;
 
-  requestNotificationsPermission(function (notificationsStatus) {
+  requestNotificationsPermission(function(notificationsStatus) {
     resetNotificationsStatus();
   });
 
@@ -70,16 +70,16 @@ $(function () {
         icon: icon
       });
 
-      instance.onclick = function () {
+      instance.onclick = function() {
         $('#messageInput').focus();
       };
-      instance.onerror = function () {
+      instance.onerror = function() {
         // Something to do
       };
-      instance.onshow = function () {
+      instance.onshow = function() {
         // Something to do
       };
-      instance.onclose = function () {
+      instance.onclose = function() {
         // Something to do
       };
 
@@ -139,7 +139,7 @@ $(function () {
           opacity: 0.1
         }, 500).animate({
           opacity: 1
-        }, 500, 'swing', function () {
+        }, 500, 'swing', function() {
           $('.userOnline' + data.user.id).remove();
         });
       } else if ($('#onlineList .userOnline' + data.user.id).length === 0) {
@@ -161,7 +161,7 @@ $(function () {
     if (data.users != undefined) {
       var list = '';
 
-      $.each(data.users, function (i, v) {
+      $.each(data.users, function(i, v) {
         list += onlineUserTemplate(v);
       });
 
@@ -252,7 +252,7 @@ $(function () {
 
       lastTypingTime = (new Date()).getTime();
 
-      setTimeout(function () {
+      setTimeout(function() {
         var typingTimer = (new Date()).getTime();
         var timeDiff = typingTimer - lastTypingTime;
         if (timeDiff >= 500 && typing) {
@@ -264,9 +264,9 @@ $(function () {
   }
 
   function requestNotificationsPermission(callback) {
-    callback = callback || function () {};
+    callback = callback || function() {};
 
-    Notification.requestPermission(function (permission) {
+    Notification.requestPermission(function(permission) {
       notificationPermission = permission;
 
       callback(notificationPermission);
@@ -309,7 +309,7 @@ $(function () {
   // --------------------------------------------------------------
 
   // Keyboard events
-  $(window).keydown(function (event) {
+  $(window).keydown(function(event) {
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
       $('#messageInput').focus();
     }
@@ -321,7 +321,7 @@ $(function () {
     }
   });
 
-  $('#messageSubmitButton').click(function (event) {
+  $('#messageSubmitButton').click(function(event) {
     sendMessage();
     //socket.emit('stop typing');
     typing = false;
@@ -332,7 +332,7 @@ $(function () {
   });*/
 
   // Mentions
-  $('body').on('click', '.user-mention-here', function () {
+  $('body').on('click', '.user-mention-here', function() {
     var mentionName = $(this).text();
     var mentionId = $(this).attr('data-id');
     var inputText = $('#messageInput').val();
@@ -347,7 +347,7 @@ $(function () {
     return false;
   });
 
-  $('#notifications-panel').click(function () {
+  $('#notifications-panel').click(function() {
     changeNotificationsStatus();
   });
 
@@ -359,7 +359,7 @@ $(function () {
   });
 
   // Socket events
-  socket.on('connect', function () {
+  socket.on('connect', function() {
     $('#chatWindow .waiting').remove();
     changeStatus(0);
 
@@ -370,7 +370,7 @@ $(function () {
     });
   });
 
-  socket.on('reconnect', function () {
+  socket.on('reconnect', function() {
     socket.emit('add user', {
       room: room,
       roomHash: roomHash,
@@ -378,11 +378,11 @@ $(function () {
     });
   });
 
-  socket.on('connect_error', function () {
+  socket.on('connect_error', function() {
     changeStatus(-1);
   });
 
-  socket.on('disconnect', function () {
+  socket.on('disconnect', function() {
     connected = false;
     changeStatus(-1);
 
@@ -392,7 +392,7 @@ $(function () {
     log('Соединение с чатом прервано');
   });
 
-  socket.on('authenticated', function () {
+  socket.on('authenticated', function() {
     socket.emit('add user', {
       room: room,
       roomHash: roomHash,
@@ -400,7 +400,7 @@ $(function () {
     });
 
     // login
-    socket.on('login', function (data) {
+    socket.on('login', function(data) {
       connected = true;
       changeStatus(1);
 
@@ -409,7 +409,7 @@ $(function () {
     });
 
     // message
-    socket.on('new message', function (data) {
+    socket.on('new message', function(data) {
       if (!data.history && !document.hasFocus() && data.message.indexOf('[id' + userData.id) >= 0) {
         var parsedMessage = parseMentions(data.message, true);
         sendNotification('Вас упомянули в чате', data.user.username + ': ' + parsedMessage, data.user.image);
@@ -419,48 +419,48 @@ $(function () {
     });
 
     // user join & left
-    socket.on('user joined', function (data) {
+    socket.on('user joined', function(data) {
       updateOnlineList(data, 'add');
     });
 
-    socket.on('user left', function (data) {
+    socket.on('user left', function(data) {
       updateOnlineList(data, 'remove');
       //removeChatTyping(data);
     });
 
     // typing
-    /*socket.on('typing', function (data) {
+    /*socket.on('typing', function(data) {
       addChatTyping(data);
     });
 
-    socket.on('stop typing', function (data) {
+    socket.on('stop typing', function(data) {
       removeChatTyping(data);
     });*/
 
     // ban
-    socket.on('banned', function (data) {
+    socket.on('banned', function(data) {
       log(data.user.username + ' заблокирован на ' + data.period + ' ' + languanize(data.period, ['минуту', 'минуты', 'минут']));
     });
 
     // slash command response
-    socket.on('command response', function (data) {
+    socket.on('command response', function(data) {
       addCommandResponse(data);
     });
 
-    socket.on('reconnecting', function () {
+    socket.on('reconnecting', function() {
       changeStatus(0);
     });
 
-    socket.on('reconnect_failed', function () {
+    socket.on('reconnect_failed', function() {
       changeStatus(-1);
     });
 
-    socket.on('reconnect_error', function () {
+    socket.on('reconnect_error', function() {
       changeStatus(-1);
     });
   });
 
-  socket.on('auth failed', function (data) {
+  socket.on('auth failed', function(data) {
     changeStatus(-1);
     alert('Access denied');
   });
@@ -479,7 +479,7 @@ if (window.addEventListener) {
     scrollXClass = 'scroll-x',
     searchTerms = '.' + scrollYClass + ', .' + scrollXClass;
 
-  $('body').on('touchstart', function (e) {
+  $('body').on('touchstart', function(e) {
     var $scroll = $(e.target).closest(searchTerms),
       targetTouch = e.originalEvent.targetTouches[0];
 
@@ -490,7 +490,7 @@ if (window.addEventListener) {
     } : {};
   });
 
-  $('body').on('touchmove', function (e) {
+  $('body').on('touchmove', function(e) {
     var $scroll = $(e.target).closest(searchTerms),
       targetTouch = e.originalEvent.targetTouches[0];
 
