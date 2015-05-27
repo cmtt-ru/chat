@@ -244,7 +244,7 @@ $(function() {
       changeStatus(1);
 
       log('Вы вошли в чат!');
-      updateOnlineList(data.user, 'add');
+      updateOnlineList(data, 'add');
     });
 
     // message
@@ -254,11 +254,11 @@ $(function() {
 
     // user join & left
     socket.on('user joined', function (data) {
-      updateOnlineList(data.user, 'add');
+      updateOnlineList(data, 'add');
     });
 
     socket.on('user left', function (data) {
-      updateOnlineList(data.user, 'remove');
+      updateOnlineList(data, 'remove');
       //removeChatTyping(data);
     });
 
