@@ -36,7 +36,7 @@ function parseMentions(text) {
   var mentions = [];
 
   while ((matches = regex.exec(text)) !== null) {
-    mentions.push({id: matches[1], name: matches[2]});
+    mentions.push({id: parseInt(matches[1]), name: this.escapeHTML(matches[2])});
   }
 
   return mentions;
