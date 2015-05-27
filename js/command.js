@@ -59,11 +59,9 @@ function processCommand(data, socket) {
 
     case 'help':
     default:
-      var response = '> /help<br>' +
-          'Доступные команды:<br>' +
+      var response = 'Доступные команды:<br>' +
           '/echo — эхо<br>' +
-          '/help — справка по командам<br>' +
-          '/shrug — пожималкин';
+          '/shrug — Пожималкин';
       responseCommand('help', response, socket);
   }
 }
