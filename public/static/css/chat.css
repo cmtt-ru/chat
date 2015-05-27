@@ -39,7 +39,7 @@ a:active {
   background: linear-gradient(to bottom, #cdeb8e 0%, #a5c956 100%);
   width: 10px;
   height: 10px;
-  display: inline-block;
+  display: block;
   top: 5px;
   position: relative;
   border-radius: 50%;
