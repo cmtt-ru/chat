@@ -4,6 +4,8 @@ var roomHash = null;
 var userData = null;
 var userDataHash = null;
 var username = "default";
+var notificationPermission;
+var notificationStatus = (localStorage) ? localStorage.getItem("notificationStatus") : false;
 
 function gotMessage(evt) {
   if (evt.origin === document.location.protocol + '//localhost:3000' || evt.origin === document.location.protocol + '//tjournal.ru') {
@@ -38,6 +40,8 @@ $(function() {
   var typing = false;
   var lastTypingTime;
 
+  var $notificationsStatus = $('#notifications-status');
+
   $(window).resize(function(){
     definePanelHeight();
   });
@@ -45,14 +49,14 @@ $(function() {
 
   /* Get notifications permissions */
   var Notification = window.Notification || window.mozNotification || window.webkitNotification;
-  var notificationPermission;
 
-  Notification.requestPermission(function (permission) {
-    notificationPermission = permission;
+  requestNotificationsPermission(function (notificationsStatus) {
+    resetNotificationsStatus();
   });
 
+
   function sendNotification(title, body, icon) {
-    if (notificationPermission === 'granted') {
+    if (notificationStatus && notificationPermission === 'granted') {
       var instance = new Notification(title, {
         body: body,
         icon: icon
@@ -72,6 +76,8 @@ $(function() {
       };
 
       return false;
+    } else if (notificationStatus && notificationPermission !== 'granted') {
+      $notificationsStatus.text('Включите оповещения в браузере');
     } else {
       return false;
     }
@@ -163,9 +169,15 @@ $(function() {
     }
   }
 
-  function parseMentions(text) {
+  function parseMentions(text, isNotification) {
     var regex = /\[id(\d+)\|([^\]]+)\]/g;
-    return text.replace(regex, '<a href="http://tjournal.ru/users/$1" target="_blank">$2</a>');
+
+    // Notifications can't show html
+    if (isNotification) {
+      return text.replace(regex, '$2');
+    } else {
+      return text.replace(regex, '<a href="http://tjournal.ru/users/$1" target="_blank">$2</a>');
+    }
   }
 
   function addCommandResponse(data) {
@@ -224,6 +236,46 @@ $(function() {
     }
   }
 
+  function requestNotificationsPermission(callback) {
+    Notification.requestPermission(function (permission) {
+      notificationPermission = permission;
+
+      callback(notificationPermission);
+    });
+  }
+
+  function resetNotificationsStatus() {
+    if (notificationStatus && notificationPermission === 'granted') {
+      notificationStatus = true;
+      $notificationsStatus.text('Оповещения включены');
+
+    } else {
+      if (notificationPermission !== 'granted') {
+        $notificationsStatus.text('Оповещения заблокированы браузером');
+        requestNotificationsPermission();
+      } else {
+        notificationStatus = false;
+        $notificationsStatus.text('Оповещения отключены');
+      }
+    }
+  }
+
+  function changeNotificationsStatus() {
+    // turn off
+    if (notificationStatus && notificationPermission === 'granted') {
+      notificationStatus = false;
+      $notificationsStatus.text('Оповещения отключены');
+    } else {
+      notificationStatus = true;
+      if (notificationPermission !== 'granted') {
+        $notificationsStatus.text('Оповещения заблокированы браузером');
+        requestPermission();
+      } else {
+        $notificationsStatus.text('Оповещения включены');
+      }
+    }
+  }
+
   // --------------------------------------------------------------
 
   // Keyboard events
@@ -263,6 +315,10 @@ $(function() {
     $('#messageInput').focus();
 
     return false;
+  });
+
+  $('#notifications-panel').click(function () {
+    changeNotificationsStatus();
   });
 
   // --------------------------------------------------------------
@@ -324,10 +380,10 @@ $(function() {
 
     // message
     socket.on('new message', function (data) {
-      console.log(data);
-      /*if (!data.history && !document.hasFocus() && data.message.indexOf('@' + userData.name) >= 0) {
-        sendNotification('Вас упомянули в TJ Chat', data.user.name + ': ' + data.message, 'https://static39.cmtt.ru/paper-preview-fox/m/us/musk-longread-1/1bce7f668558-normal.jpg');
-      }*/
+      if (!data.history && !document.hasFocus() && data.message.indexOf('[id' + userData.id) >= 0) {
+        var parsedMessage = parseMentions(data.message, true);
+        sendNotification('Вас упомянули в чате', data.user.username + ': ' + parsedMessage, data.user.image);
+      }
       addChatMessage(data);
     });
 
