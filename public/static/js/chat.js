@@ -3,6 +3,7 @@ var room = null;
 var roomHash = null;
 var userData = null;
 var userDataHash = null;
+var username = "default";
 
 function gotMessage(evt) {
   if (evt.origin === document.location.protocol + '//localhost:3000' || evt.origin === document.location.protocol + '//tjournal.ru') {
@@ -12,7 +13,7 @@ function gotMessage(evt) {
     userDataHash = data.userHash;
     room = data.room;
     roomHash = data.roomHash;
-    userData['username'] = data.username;
+    username = data.username;
 
     socket.open();
   }
@@ -218,7 +219,8 @@ $(function() {
 
     socket.emit('authentication', {
       user: userData,
-      hash: userDataHash
+      hash: userDataHash,
+      username: username
     });
   });
 
