@@ -306,23 +306,6 @@ $(function () {
     if (ls) ls.setItem('notificationsStatus', notificationStatus);
   }
 
-  function newMessageTitle() {
-    var isOldTitle = true;
-    var oldTitle = document.title;
-    var newTitle = "Новое сообщение";
-    var interval = null;
-    function changeTitle() {
-        document.title = isOldTitle ? oldTitle : newTitle;
-        isOldTitle = !isOldTitle;
-    }
-    interval = setInterval(changeTitle, 700);
-
-    $(window).focus(function () {
-        clearInterval(interval);
-        $("title").text(oldTitle);
-    });
-  };
-
   // --------------------------------------------------------------
 
   // Keyboard events
