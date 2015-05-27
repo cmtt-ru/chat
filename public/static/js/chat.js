@@ -4,7 +4,6 @@ var roomHash = null;
 var userData = null;
 var userDataHash = null;
 var username = "default";
-var notificationPermission;
 
 var ls;
 try {
@@ -13,7 +12,7 @@ try {
   ls = false;
 }
 
-var notificationStatus = (ls && localStorage.getItem("notificationsStatus") == 'true') ? true : false;
+var notificationsStatus = (ls && localStorage.getItem("notificationsStatus") == 'true') ? true : false;
 
 function gotMessage(evt) {
   if (evt.origin === document.location.protocol + '//localhost:3000' || evt.origin === document.location.protocol + '//tj.local' || evt.origin === document.location.protocol + '//tjournal.ru') {
@@ -56,9 +55,8 @@ $(function() {
   definePanelHeight();
 
   var Notification = window.Notification || window.mozNotification || window.webkitNotification;
-  requestNotificationsPermission(function(notificationsStatus) {
-    resetNotificationsStatus();
-  });
+
+  resetNotificationsStatus();
 
   function bell(status) {
     if (status === 'offline') {
@@ -69,7 +67,12 @@ $(function() {
   }
 
   function sendNotification(title, body, icon) {
-    if (notificationStatus && notificationPermission === 'granted') {
+    if (!("Notification" in window)) {
+      $notificationsStatus.text('Браузер не поддерживает уведомления');
+      return;
+    }
+
+    if (notificationsStatus && Notification.permission === 'granted') {
       var instance = new Notification(title, {
         body: body,
         icon: icon
@@ -89,7 +92,7 @@ $(function() {
       };
 
       return false;
-    } else if (notificationStatus && notificationPermission !== 'granted') {
+    } else if (notificationsStatus && Notification.permission !== 'granted') {
       $notificationsStatus.text('Уведомления блокируются браузером');
       bell('offline');
       requestNotificationsPermission();
@@ -271,27 +274,37 @@ $(function() {
   }
 
   function requestNotificationsPermission(callback) {
+    if (!("Notification" in window)) {
+      $notificationsStatus.text('Браузер не поддерживает уведомления');
+      return;
+    }
+
     callback = callback || function() {};
 
     Notification.requestPermission(function(permission) {
-      notificationPermission = permission;
+      Notification.permission = permission;
 
-      callback(notificationPermission);
+      callback(Notification.permission);
     });
   }
 
   function resetNotificationsStatus() {
-    if (notificationStatus && notificationPermission === 'granted') {
-      notificationStatus = true;
+    if (!("Notification" in window)) {
+      $notificationsStatus.text('Браузер не поддерживает уведомления');
+      return;
+    }
+
+    if (notificationsStatus && Notification.permission === 'granted') {
+      notificationsStatus = true;
       $notificationsStatus.text('Отключить уведомления');
       bell();
     } else {
-      if (notificationPermission !== 'granted') {
-        $notificationsStatus.text('Уведомления заблокированы браузером');
+      if (Notification.permission === 'denied') {
+        $notificationsStatus.text('Уведомления блокируются браузером');
         requestNotificationsPermission();
         bell('offline');
       } else {
-        notificationStatus = false;
+        notificationsStatus = false;
         $notificationsStatus.text('Включить уведомления');
         bell('offline');
       }
@@ -299,23 +312,29 @@ $(function() {
   }
 
   function changeNotificationsStatus() {
+    if (!("Notification" in window)) {
+      $notificationsStatus.text('Браузер не поддерживает уведомления');
+      return;
+    }
+
     // turn off
-    if (notificationStatus && notificationPermission === 'granted') {
-      notificationStatus = false;
+    if (notificationsStatus && Notification.permission === 'granted') {
+      notificationsStatus = false;
       $notificationsStatus.text('Включить уведомления');
       bell('offline');
     } else {
-      notificationStatus = true;
-      if (notificationPermission !== 'granted') {
+      if (Notification.permission !== 'granted') {
+        notificationsStatus = false;
         $notificationsStatus.text('Уведомления заблокированы браузером');
         bell('offline');
-        requestPermission();
+        requestNotificationsPermission();
       } else {
+        notificationsStatus = true;
         $notificationsStatus.text('Отключить уведомления');
         bell();
       }
     }
-    if (ls) localStorage.setItem('notificationsStatus', notificationStatus);
+    if (ls) localStorage.setItem('notificationsStatus', notificationsStatus);
   }
 
   // --------------------------------------------------------------
