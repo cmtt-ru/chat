@@ -205,12 +205,6 @@ $(function() {
     typing = false;
   });
 
-  $('.message-nickname').click(function (event) {
-    var self = this;
-
-
-  });
-
   /*$('#messageInput').on('input', function() {
     updateTyping();
   });*/
