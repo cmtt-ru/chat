@@ -31,7 +31,7 @@ function checkRoomAuthorization(name, salt, hash) {
 }
 
 function parseMentions(text) {
-  var regex = /\[id(\d*)\|([\wа-я]*)\]/g;
+  var regex = /\[id(\d+)\|([^\]]+)\]/g;
   var matches;
   var mentions = [];
 

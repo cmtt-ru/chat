@@ -130,7 +130,7 @@ $(function() {
   }
 
   function parseMentions(text) {
-    var regex = /\[id(\d*)\|([\wа-я]*)\]/g;
+    var regex = /\[id(\d+)\|([^\]]+)\]/g;
     return text.replace(regex, '<a href="http://tjournal.ru/users/$1">$2</a>');
   }
 
