@@ -35,8 +35,8 @@ function parseMentions(text) {
   var matches;
   var mentions = [];
   while ((matches = regex.exec(text)) !== null) {
-   // mentions.push({id:matches[1],name:matches[2]});
-    mentions[matches[1]] = matches[2];
+    mentions.push({id:matches[1],name:matches[2]});
+   // mentions[matches[1]] = matches[2];
   }
   return mentions;
 }

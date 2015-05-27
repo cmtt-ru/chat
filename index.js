@@ -150,7 +150,11 @@ io.on('connection', function (socket) {
     messageId = messageId.update(JSON.stringify({ userId: socket.user.id, time: timestampms }), 'utf8').digest('hex');
 
     var mentions = helper.parseMentions(data.text);
-    //TODO check user id existence
+    for (var mention in mentions) {
+      if (!rooms[socket.room].hasUser(mention.id)){
+        delete mention;
+      }
+    }
 
     var message = {
       id: messageId,
