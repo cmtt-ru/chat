@@ -87,9 +87,19 @@ $(function() {
 
         $('#onlineList .userOnline' + data.user.id + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500);
       }
-
-      $('#onlineList .userOnline' + userData.id).addClass('me');
     }
+
+    if (data.users != undefined) {
+      var list = '';
+
+      $.each(data.users, function(i, v) {
+        list += onlineUserTemplate(v);
+      });
+
+      $('#onlineList').html(list);
+    }
+
+    $('#onlineList .userOnline' + userData.id).addClass('me');
   }
 
   function sendMessage() {
@@ -244,7 +254,7 @@ $(function() {
       changeStatus(1);
 
       log('Вы вошли в чат!');
-      updateOnlineList(data, 'add');
+      updateOnlineList(data);
     });
 
     // message
