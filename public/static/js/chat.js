@@ -64,7 +64,7 @@ $(function() {
     $('#onlineList').css('height', h - hh);
   }
 
-  function updateOnlineList(data) {
+  function updateOnlineList(data, action) {
     if (data.numUsers != undefined) {
       var dnum = parseInt(data.numUsers);
 
@@ -76,14 +76,18 @@ $(function() {
       $('.onlineCount').text(dnum + ch + ' онлайн');
     }
 
-    if (data.users != undefined) {
-      var list = '';
+    if (data.user != undefined) {
+      if (action === 'remove') {
+        $('#onlineList .userOnline' + data.user.id + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500, 'swing', function(){
+          $(this).remove();
+        });
+      } else if ($('#onlineList .userOnline' + data.user.id).length === 0) {
+        var userLi = onlineUserTemplate(data.user);
+        $('#onlineList').append(userLi);
 
-      $.each(data.users, function(i, v) {
-        list += onlineUserTemplate(v);
-      });
+        $('#onlineList .userOnline' + data.user.id + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500);
+      }
 
-      $('#onlineList').html(list);
       $('#onlineList .userOnline' + userData.id).addClass('me');
     }
   }
@@ -164,14 +168,6 @@ $(function() {
     }
   }
 
-  function userJoin(userId) {
-    $('.userOnline' + userId + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500);
-  }
-
-  function userLeft(userId, callback) {
-    $('.userOnline' + userId + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500, 'swing', callback);
-  }
-
   // --------------------------------------------------------------
 
   // Keyboard events
@@ -248,7 +244,7 @@ $(function() {
       changeStatus(1);
 
       log('Вы вошли в чат!');
-      updateOnlineList(data);
+      updateOnlineList(data.user, 'add');
     });
 
     // message
@@ -258,14 +254,11 @@ $(function() {
 
     // user join & left
     socket.on('user joined', function (data) {
-      updateOnlineList(data);
-      userJoin(data.user.id);
+      updateOnlineList(data.user, 'add');
     });
 
     socket.on('user left', function (data) {
-      userLeft(data.user.id, function() {
-        updateOnlineList(data);
-      });
+      updateOnlineList(data.user, 'remove');
       //removeChatTyping(data);
     });
 

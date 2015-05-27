@@ -63,8 +63,7 @@ Room.prototype.addUser = function(user, socket) {
 
   socket.broadcast.to(this.name).emit('user joined', {
     user: socket.user,
-    numUsers: this.getUsersCount(),
-    users: this.getUsers()
+    numUsers: this.getUsersCount()
   });
 }
 
@@ -79,8 +78,7 @@ Room.prototype.removeUser = function(userId, socket) {
 
   socket.broadcast.to(this.name).emit('user left', {
     user: socket.user,
-    numUsers: this.getUsersCount(),
-    users: this.getUsers()
+    numUsers: this.getUsersCount()
   });
 }
 
