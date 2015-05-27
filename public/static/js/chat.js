@@ -131,7 +131,7 @@ $(function() {
 
   function parseMentions(text) {
     var regex = /\[id(\d+)\|([^\]]+)\]/g;
-    return text.replace(regex, '<a href="http://tjournal.ru/users/$1">$2</a>');
+    return text.replace(regex, '<a href="http://tjournal.ru/users/$1" target="_blank">$2</a>');
   }
 
   function addCommandResponse(data) {
