@@ -93,7 +93,7 @@ $(function() {
 
       return false;
     } else if (notificationsStatus && Notification.permission !== 'granted') {
-      $notificationsStatus.text('Уведомления блокируются браузером');
+      $notificationsStatus.text('Одобрите показ уведомлений');
       bell('offline');
       requestNotificationsPermission();
     } else {
@@ -300,7 +300,7 @@ $(function() {
       bell();
     } else {
       if (Notification.permission === 'denied') {
-        $notificationsStatus.text('Уведомления блокируются браузером');
+        $notificationsStatus.text('Одобрите показ уведомлений');
         requestNotificationsPermission();
         bell('offline');
       } else {
@@ -325,9 +325,19 @@ $(function() {
     } else {
       if (Notification.permission !== 'granted') {
         notificationsStatus = false;
-        $notificationsStatus.text('Уведомления заблокированы браузером');
+        $notificationsStatus.text('Одобрите показ уведомлений');
         bell('offline');
-        requestNotificationsPermission();
+        requestNotificationsPermission(function () {
+          if (Notification.permission !== 'granted') {
+            notificationsStatus = false;
+            $notificationsStatus.text('Одобрите показ уведомлений');
+            bell('offline');
+          } else {
+            notificationsStatus = true;
+            $notificationsStatus.text('Отключить уведомления');
+            bell();
+          }
+        });
       } else {
         notificationsStatus = true;
         $notificationsStatus.text('Отключить уведомления');
