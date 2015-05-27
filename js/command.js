@@ -63,7 +63,7 @@ function processCommand(data, socket) {
           'Доступные команды:<br>' +
           '/echo — эхо<br>' +
           '/help — справка по командам<br>' +
-          '/ban — блокировка аккаунта';
+          '/shrug — пожималкин';
       responseCommand('help', response, socket);
   }
 }

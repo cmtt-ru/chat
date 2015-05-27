@@ -130,8 +130,12 @@ io.on('connection', function (socket) {
 
     // if message starts with '/' — we're not sending it to everyone, we're processing it in unique way
     if (command.isCommand(data.text)) {
-      command.processCommand(data.text, socket);
-      return true;
+      if (data.text === '/shrug') {
+        data.text = '¯\_(ツ)_/¯';
+      } else {
+        command.processCommand(data.text, socket);
+        return true;
+      }
     }
 
     if (isUserBanned(socket.user.id)) {
