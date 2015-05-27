@@ -66,7 +66,14 @@ $(function() {
 
   function updateOnlineList(data) {
     if (data.numUsers != undefined) {
-      $('.onlineCount').text(parseInt(data.numUsers));
+      var dnum = parseInt(data.numUsers);
+
+      var ch = ' человек';
+      if (dnum < 5 || dnum > 1) {
+        ch = ' человека';
+      }
+
+      $('.onlineCount').text(dnum + ch + ' онлайн');
     }
 
     if (data.users != undefined) {
