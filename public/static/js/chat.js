@@ -117,11 +117,13 @@ $(function() {
 
   function addChatMessage(data) {
     //removeChatTyping(data);
-    data.message = autolinker.link(data.message);
-    addMessageElement(messageTemplate(data));
+    if ($('.message' + data.id).length == 0) {
+      data.message = autolinker.link(data.message);
+      addMessageElement(messageTemplate(data));
 
-    var messageDate = new Date(data.timestamp*1000);
-    $(".message"+data.id+" .timestamp").text(messageDate.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1"));
+      var messageDate = new Date(data.timestamp*1000);
+      $(".message"+data.id+" .timestamp").text(messageDate.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1"));
+    }
   }
 
   function addCommandResponse(data) {
