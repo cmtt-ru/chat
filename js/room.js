@@ -59,8 +59,7 @@ Room.prototype.sendHistory = function(socket) {
  */
 Room.prototype.addUser = function(data, socket) {
   if (!this.users[data[0].id]) {
-    this.users[data[0].id] = {};
-    this.users[data[0].id].user = data[0];
+    this.users[data[0].id] = data[0];
     this.users[data[0].id].sockets = [];
     ++this.numUsers;
   }
