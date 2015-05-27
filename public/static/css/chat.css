@@ -65,6 +65,14 @@ a:active {
   background: linear-gradient(to bottom, #f1e767 0%, #feb645 100%);
 }
 
+.bell-online {
+  color: #a5c956;
+}
+
+.bell-offline {
+  color: #ff3019;
+}
+
 .panel-body {
   padding: 0;
 }

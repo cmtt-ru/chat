@@ -13,10 +13,10 @@ try {
   ls = false;
 }
 
-var notificationStatus = (ls && ls.getItem("notificationsStatus") == 'true') ? true : false;
+var notificationStatus = (ls && localStorage.getItem("notificationsStatus") == 'true') ? true : false;
 
 function gotMessage(evt) {
-  if (evt.origin === document.location.protocol + '//localhost:3000' || evt.origin === document.location.protocol + '//tjournal.ru') {
+  if (evt.origin === document.location.protocol + '//localhost:3000' || evt.origin === document.location.protocol + '//tj.local' || evt.origin === document.location.protocol + '//tjournal.ru') {
     var data = $.parseJSON(evt.data);
 
     userData = data.user;
@@ -55,13 +55,18 @@ $(function() {
   });
   definePanelHeight();
 
-  /* Get notifications permissions */
   var Notification = window.Notification || window.mozNotification || window.webkitNotification;
-
   requestNotificationsPermission(function(notificationsStatus) {
     resetNotificationsStatus();
   });
 
+  function bell(status) {
+    if (status === 'offline') {
+      $('.bell').removeClass('bell-online').addClass('bell-offline');
+    } else {
+      $('.bell').addClass('bell-online').removeClass('bell-offline');
+    }
+  }
 
   function sendNotification(title, body, icon) {
     if (notificationStatus && notificationPermission === 'granted') {
@@ -85,7 +90,8 @@ $(function() {
 
       return false;
     } else if (notificationStatus && notificationPermission !== 'granted') {
-      $notificationsStatus.text('Оповещения блокируются браузером');
+      $notificationsStatus.text('Уведомления блокируются браузером');
+      bell('offline');
       requestNotificationsPermission();
     } else {
       return false;
@@ -117,9 +123,10 @@ $(function() {
     var h = $('.baseHeight').height();
     var hh = $('.baseHeight .panel-heading').outerHeight();
     var fh = $('.baseHeight .panel-footer').outerHeight();
+    var nh = $('#notifications-panel').outerHeight();
 
     $('#chatWindow').css('height', h - hh - fh);
-    $('#onlineList').css('height', h - hh);
+    $('#onlineList').css('height', h - hh - nh);
   }
 
   function updateOnlineList(data, action) {
@@ -276,15 +283,17 @@ $(function() {
   function resetNotificationsStatus() {
     if (notificationStatus && notificationPermission === 'granted') {
       notificationStatus = true;
-      $notificationsStatus.text('Оповещения включены');
-
+      $notificationsStatus.text('Отключить уведомления');
+      bell();
     } else {
       if (notificationPermission !== 'granted') {
-        $notificationsStatus.text('Оповещения заблокированы браузером');
+        $notificationsStatus.text('Уведомления заблокированы браузером');
         requestNotificationsPermission();
+        bell('offline');
       } else {
         notificationStatus = false;
-        $notificationsStatus.text('Оповещения отключены');
+        $notificationsStatus.text('Включить уведомления');
+        bell('offline');
       }
     }
   }
@@ -293,17 +302,20 @@ $(function() {
     // turn off
     if (notificationStatus && notificationPermission === 'granted') {
       notificationStatus = false;
-      $notificationsStatus.text('Оповещения отключены');
+      $notificationsStatus.text('Включить уведомления');
+      bell('offline');
     } else {
       notificationStatus = true;
       if (notificationPermission !== 'granted') {
-        $notificationsStatus.text('Оповещения заблокированы браузером');
+        $notificationsStatus.text('Уведомления заблокированы браузером');
+        bell('offline');
         requestPermission();
       } else {
-        $notificationsStatus.text('Оповещения включены');
+        $notificationsStatus.text('Отключить уведомления');
+        bell();
       }
     }
-    if (ls) ls.setItem('notificationsStatus', notificationStatus);
+    if (ls) localStorage.setItem('notificationsStatus', notificationStatus);
   }
 
   // --------------------------------------------------------------
@@ -321,7 +333,7 @@ $(function() {
     }
   });
 
-  $('#messageSubmitButton').click(function(event) {
+  $('body').on('click', '#messageSubmitButton', function(event) {
     sendMessage();
     //socket.emit('stop typing');
     typing = false;
@@ -347,7 +359,7 @@ $(function() {
     return false;
   });
 
-  $('#notifications-panel').click(function() {
+  $('body').on('click', '#notifications-panel', function() {
     changeNotificationsStatus();
   });
 
@@ -412,7 +424,7 @@ $(function() {
     socket.on('new message', function(data) {
       if (!data.history && !document.hasFocus() && data.message.indexOf('[id' + userData.id) >= 0) {
         var parsedMessage = parseMentions(data.message, true);
-        sendNotification('Вас упомянули в чате', data.user.username + ': ' + parsedMessage, data.user.image);
+        sendNotification('Вас упомянули в чате TJ', data.user.username + ': ' + parsedMessage, data.user.image);
       }
 
       addChatMessage(data);
