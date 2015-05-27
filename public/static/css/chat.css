@@ -70,7 +70,7 @@ a:active {
 }
 
 .bell-offline {
-  color: #ff3019;
+  color: #aaa;
 }
 
 .panel-body {
@@ -162,6 +162,15 @@ a:active {
 #notifications-panel:hover {
   background-image: linear-gradient(to bottom, #ebebeb 0px, #dedede 100%);
   background-repeat: repeat-x;
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 /* columns of same height styles */
