@@ -111,9 +111,7 @@ $(function() {
     if (message && connected) {
       $('#messageInput').val('');
 
-      var messageObj = { text: message };
-
-      socket.emit('new message', messageObj);
+      socket.emit('new message', { text: message });
     }
   }
 
@@ -130,8 +128,8 @@ $(function() {
   }
 
   function parseMentions(text) {
-    var regex = /\[(\d*)\|([\wа-я]*)\]/g;
-    return text.replace(regex, '<a href="https://tjournal.ru/users/$1">$2</a>');
+    var regex = /\[id(\d*)\|([\wа-я]*)\]/g;
+    return text.replace(regex, '<a href="http://tjournal.ru/users/$1">$2</a>');
   }
 
   function addCommandResponse(data) {
@@ -217,27 +215,17 @@ $(function() {
 
   // Mentions
   $('#chatWindow').on('click', '.media-user-name', function (event) {
-    mentionName = $(this).text();
-    console.log($(this).parent().closest('input#userId').val())
-    mentionId = $(this).parent().parent().find('.media-user-id').val();
+    var mentionName = $(this).text();
+    var mentionId = $(this).attr('data-id');
     var inputText = $('#messageInput').val();
-    if (inputText && inputText.slice(-1)!==' ') inputText += ' ';
-    $('#messageInput').val(inputText+'['+mentionId+'|'+mentionName+'] ');
+
+    if (inputText && inputText.slice(-1) !== ' ') {
+      inputText += ' ';
+    }
+
+    $('#messageInput').val(inputText + '[id' + mentionId + '|' + mentionName + '] ');
     $('#messageInput').focus();
   });
-  
-  // Mention clear
-  /*
-  $('#messageInput').on('keyup',function (event) {
-    var inputText = $(this).val();
-    if (mentionName !== '') {
-      if (inputText.indexOf(mentionName) == -1) {
-        mentionName = '';
-        mentionId = 0;
-      }
-    }
-  });
-  */
 
   // --------------------------------------------------------------
 

@@ -164,8 +164,6 @@ io.on('connection', function (socket) {
       mentions: mentions
     };
 
-
-
     io.to(socket.room).emit('new message', message);
 
     rooms[socket.room].addToHistory(message);

@@ -31,13 +31,14 @@ function checkRoomAuthorization(name, salt, hash) {
 }
 
 function parseMentions(text) {
-  var regex = /\[(\d*)\|([\wа-я]*)\]/g;
+  var regex = /\[id(\d*)\|([\wа-я]*)\]/g;
   var matches;
   var mentions = [];
+
   while ((matches = regex.exec(text)) !== null) {
-    mentions.push({id:matches[1],name:matches[2]});
-   // mentions[matches[1]] = matches[2];
+    mentions.push({id: matches[1], name: matches[2]});
   }
+
   return mentions;
 }
 
