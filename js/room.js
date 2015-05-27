@@ -70,10 +70,11 @@ Room.prototype.sendHistory = function(socket) {
  */
 Room.prototype.addUser = function(data, socket) {
   if (!this.users[data[0].id]) {
-    this.users[data[0].id] = data[0];
     this.sockets[data[0].id] = [];
     ++this.numUsers;
   }
+
+  this.users[data[0].id] = data[0];
   this.sockets[data[0].id].push(data[1]);
 
   socket.broadcast.to(this.name).emit('user joined', {

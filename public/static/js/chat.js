@@ -85,11 +85,16 @@ $(function() {
         $('#onlineList .userOnline' + data.user.id + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500, 'swing', function(){
           $('.userOnline' + data.user.id).remove();
         });
-      } else if ($('#onlineList .userOnline' + data.user.id).length === 0) {
+      } else {
         var userLi = onlineUserTemplate(data.user);
-        $('#onlineList').append(userLi);
 
-        $('#onlineList .userOnline' + data.user.id + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500);
+        if ($('#onlineList .userOnline' + data.user.id).length === 0) {
+          $('#onlineList').append(userLi);
+
+          $('#onlineList .userOnline' + data.user.id + ' .media-object').animate({opacity: 0.1}, 500).animate({opacity: 1}, 500).animate({opacity: 0.1}, 500).animate({opacity: 1}, 500);
+        } else {
+          $('#onlineList .userOnline' + data.user.id).replaceWith(userLi);
+        }
       }
     }
 
