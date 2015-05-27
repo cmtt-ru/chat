@@ -9,6 +9,7 @@ function Room(name) {
   this.name = name;
   this.users = {};
   this.history = [];
+  this.sockets = {};
   this.numUsers = 0;
 }
 
@@ -60,10 +61,10 @@ Room.prototype.sendHistory = function(socket) {
 Room.prototype.addUser = function(data, socket) {
   if (!this.users[data[0].id]) {
     this.users[data[0].id] = data[0];
-    this.users[data[0].id].sockets = [];
+    this.sockets[data[0].id] = [];
     ++this.numUsers;
   }
-  this.users[data[0].id].sockets.push(data[1]);
+  this.sockets[data[0].id].push(data[1]);
 
   socket.broadcast.to(this.name).emit('user joined', {
     user: socket.user,
@@ -77,16 +78,17 @@ Room.prototype.addUser = function(data, socket) {
  * @param  object socket
  */
 Room.prototype.removeUser = function(userId, socket) {
-  this.users[userId].sockets.shift();
-  if (!this.users[userId].sockets.length) {
+  this.sockets[userId].shift();
+  if (!this.sockets[userId].length) {
     delete this.users[userId];
+    delete this.sockets[userId];
     --this.numUsers;
+  } else {
+    socket.broadcast.to(this.name).emit('user left', {
+      user: socket.user,
+      numUsers: this.getUsersCount()
+    });
   }
-
-  socket.broadcast.to(this.name).emit('user left', {
-    user: socket.user,
-    numUsers: this.getUsersCount()
-  });
 }
 
 module.exports = Room;
