@@ -111,19 +111,27 @@ $(function() {
     if (message && connected) {
       $('#messageInput').val('');
 
-      socket.emit('new message', { text: message });
+      var messageObj = { text: message };
+
+      socket.emit('new message', messageObj);
     }
   }
 
   function addChatMessage(data) {
     //removeChatTyping(data);
     if ($('.message' + data.id).length == 0) {
+      data.message = parseMentions(data.message);
       data.message = autolinker.link(data.message);
       addMessageElement(messageTemplate(data));
 
       var messageDate = new Date(data.timestamp*1000);
       $(".message"+data.id+" .timestamp").text(messageDate.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1"));
     }
+  }
+
+  function parseMentions(text) {
+    var regex = /\[(\d*)\|([\wа-я]*)\]/g;
+    return text.replace(regex, '<a href="https://tjournal.ru/users/$1">$2</a>');
   }
 
   function addCommandResponse(data) {
@@ -206,6 +214,30 @@ $(function() {
   /*$('#messageInput').on('input', function() {
     updateTyping();
   });*/
+
+  // Mentions
+  $('#chatWindow').on('click', '.media-user-name', function (event) {
+    mentionName = $(this).text();
+    console.log($(this).parent().closest('input#userId').val())
+    mentionId = $(this).parent().parent().find('.media-user-id').val();
+    var inputText = $('#messageInput').val();
+    if (inputText && inputText.slice(-1)!==' ') inputText += ' ';
+    $('#messageInput').val(inputText+'['+mentionId+'|'+mentionName+'] ');
+    $('#messageInput').focus();
+  });
+  
+  // Mention clear
+  /*
+  $('#messageInput').on('keyup',function (event) {
+    var inputText = $(this).val();
+    if (mentionName !== '') {
+      if (inputText.indexOf(mentionName) == -1) {
+        mentionName = '';
+        mentionId = 0;
+      }
+    }
+  });
+  */
 
   // --------------------------------------------------------------
 
