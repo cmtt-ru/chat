@@ -4,6 +4,8 @@ var roomHash = null;
 var userData = null;
 var userDataHash = null;
 var username = "default";
+var notificationPermission;
+var notificationStatus = (localStorage) ? localStorage.getItem("notificationStatus") : false;
 
 function gotMessage(evt) {
   if (evt.origin === document.location.protocol + '//localhost:3000' || evt.origin === document.location.protocol + '//tjournal.ru') {
@@ -38,10 +40,48 @@ $(function() {
   var typing = false;
   var lastTypingTime;
 
+  var $notificationsStatus = $('#notifications-status');
+
   $(window).resize(function(){
     definePanelHeight();
   });
   definePanelHeight();
+
+  /* Get notifications permissions */
+  var Notification = window.Notification || window.mozNotification || window.webkitNotification;
+
+  requestNotificationsPermission(function (notificationsStatus) {
+    resetNotificationsStatus();
+  });
+
+
+  function sendNotification(title, body, icon) {
+    if (notificationStatus && notificationPermission === 'granted') {
+      var instance = new Notification(title, {
+        body: body,
+        icon: icon
+      });
+
+      instance.onclick = function () {
+        $('#messageInput').focus();
+      };
+      instance.onerror = function () {
+        // Something to do
+      };
+      instance.onshow = function () {
+        // Something to do
+      };
+      instance.onclose = function () {
+        // Something to do
+      };
+
+      return false;
+    } else if (notificationStatus && notificationPermission !== 'granted') {
+      $notificationsStatus.text('Включите оповещения в браузере');
+    } else {
+      return false;
+    }
+  }
 
   // --------------------------------------------------------------
 
@@ -134,9 +174,15 @@ $(function() {
     }
   }
 
-  function parseMentions(text) {
+  function parseMentions(text, isNotification) {
     var regex = /\[id(\d+)\|([^\]]+)\]/g;
-    return text.replace(regex, '<a href="http://tjournal.ru/users/$1" target="_blank">$2</a>');
+
+    // Notifications can't show html
+    if (isNotification) {
+      return text.replace(regex, '$2');
+    } else {
+      return text.replace(regex, '<a href="http://tjournal.ru/users/$1" target="_blank">$2</a>');
+    }
   }
 
   function addCommandResponse(data) {
@@ -195,6 +241,46 @@ $(function() {
     }
   }
 
+  function requestNotificationsPermission(callback) {
+    Notification.requestPermission(function (permission) {
+      notificationPermission = permission;
+
+      callback(notificationPermission);
+    });
+  }
+
+  function resetNotificationsStatus() {
+    if (notificationStatus && notificationPermission === 'granted') {
+      notificationStatus = true;
+      $notificationsStatus.text('Оповещения включены');
+
+    } else {
+      if (notificationPermission !== 'granted') {
+        $notificationsStatus.text('Оповещения заблокированы браузером');
+        requestNotificationsPermission();
+      } else {
+        notificationStatus = false;
+        $notificationsStatus.text('Оповещения отключены');
+      }
+    }
+  }
+
+  function changeNotificationsStatus() {
+    // turn off
+    if (notificationStatus && notificationPermission === 'granted') {
+      notificationStatus = false;
+      $notificationsStatus.text('Оповещения отключены');
+    } else {
+      notificationStatus = true;
+      if (notificationPermission !== 'granted') {
+        $notificationsStatus.text('Оповещения заблокированы браузером');
+        requestPermission();
+      } else {
+        $notificationsStatus.text('Оповещения включены');
+      }
+    }
+  }
+
   // --------------------------------------------------------------
 
   // Keyboard events
@@ -234,6 +320,10 @@ $(function() {
     $('#messageInput').focus();
 
     return false;
+  });
+
+  $('#notifications-panel').click(function () {
+    changeNotificationsStatus();
   });
 
   // --------------------------------------------------------------
@@ -295,6 +385,10 @@ $(function() {
 
     // message
     socket.on('new message', function (data) {
+      if (!data.history && !document.hasFocus() && data.message.indexOf('[id' + userData.id) >= 0) {
+        var parsedMessage = parseMentions(data.message, true);
+        sendNotification('Вас упомянули в чате', data.user.username + ': ' + parsedMessage, data.user.image);
+      }
       addChatMessage(data);
     });
 

@@ -58,6 +58,7 @@ Room.prototype.addToHistory = function(message) {
 Room.prototype.sendHistory = function(socket) {
   if (this.history.length > 0) {
     this.history.forEach(function(data) {
+      data.history = true;
       socket.emit('new message', data);
     });
   }
