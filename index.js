@@ -153,11 +153,19 @@ io.on('connection', function (socket) {
     var messageId = crypto.createHash('md5');
     messageId = messageId.update(JSON.stringify({ userId: socket.user.id, time: timestampms }), 'utf8').digest('hex');
 
+    var mentions = helper.parseMentions(data.text);
+    for (var mention in mentions) {
+      if (!rooms[socket.room].hasUser(mention.id)){
+        delete mention;
+      }
+    }
+
     var message = {
       id: messageId,
       user: socket.user,
       message: helper.escapeHTML(data.text),
-      timestamp: timestamp
+      timestamp: timestamp,
+      mentions: mentions
     };
 
     io.to(socket.room).emit('new message', message);

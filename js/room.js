@@ -22,6 +22,16 @@ Room.prototype.getUsers = function() {
 }
 
 /**
+ * Проверяет, есть ли пользователь в комнате
+ * @return boolean
+ */
+Room.prototype.hasUser = function(id) {
+  for (var user in this.users)
+    if (user.id == id) return true;
+  return false;
+}
+
+/**
  * Вовзвращает количество пользователей в комнате
  * @return number
  */

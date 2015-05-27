@@ -30,6 +30,18 @@ function checkRoomAuthorization(name, salt, hash) {
   return false;
 }
 
+function parseMentions(text) {
+  var regex = /\[id(\d*)\|([\wа-я]*)\]/g;
+  var matches;
+  var mentions = [];
+
+  while ((matches = regex.exec(text)) !== null) {
+    mentions.push({id: matches[1], name: matches[2]});
+  }
+
+  return mentions;
+}
+
 var rAmp = /&/g,
   rLt = /</g,
   rGt = />/g,
@@ -57,3 +69,4 @@ function escapeHTML(str) {
 module.exports.roomNameNormilize = roomNameNormilize;
 module.exports.checkRoomAuthorization = checkRoomAuthorization;
 module.exports.escapeHTML = escapeHTML;
+module.exports.parseMentions = parseMentions;
