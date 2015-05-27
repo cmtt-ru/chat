@@ -182,7 +182,7 @@ io.on('connection', function (socket) {
 
     var message = {
       id: messageId,
-      user: socket.user,
+      user: rooms[socket.room].users[socket.user.id],
       message: helper.escapeHTML(data.text),
       timestamp: timestamp,
       mentions: mentions
@@ -235,7 +235,7 @@ io.on('connection', function (socket) {
     socket.join(room);
     isAuthenticated = true;
 
-    socket.user = rooms[room].addUser([socket.user, data.socket], socket);
+    rooms[room].addUser([socket.user, data.socket], socket);
 
     userBannedInit(socket.user.id);
 

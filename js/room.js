@@ -78,11 +78,9 @@ Room.prototype.addUser = function(data, socket) {
   this.sockets[data[0].id].push(data[1]);
 
   socket.broadcast.to(this.name).emit('user joined', {
-    user: data[0],
+    user: socket.user,
     numUsers: this.getUsersCount()
   });
-
-  return data[0];
 }
 
 /**
