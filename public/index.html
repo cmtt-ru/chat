@@ -15,10 +15,11 @@
       <div class="row-same-height row-full-height">
         <div class="col-sm-9 col-xs-height col-full-height">
           <div class="panel panel-default baseHeight">
-            <div class="panel-heading">
+            <div class="panel-heading" style="height: 41px;">
+              <div class="pull-left" id="head-logo"><img src="http://tjournal.ru/static/main/img/logo-colored.png" /><b>Чат TJ</b></div>
               <div class="pull-right visible-xs"><span class="onlineCount">&nbsp;</span></div>
-              <div class="pull-right hidden-xs"><a href="#" class="btn btn-default btn-xs changeFont"><i class="glyphicon glyphicon-text-size"></i></a></div>
-              Чат TJ
+              <div class="pull-right hidden-xs"><a href="#" class="btn btn-xs changeFont"><i class="glyphicon glyphicon-text-size"></i></a></div>
+              
             </div>
             <div class="panel-body">
               <ul class="media-list scroll-y" id="chatWindow">
@@ -38,16 +39,16 @@
           </div>
         </div>
         <div class="col-sm-3 hidden-xs col-xs-height col-full-height">
-          <div class="panel panel-default">
-            <div class="panel-heading">
+          <div class="panel panel-default" id="users-panel">
+            <div class="panel-heading" id="online-panel">
                 <div class="pull-right"><span class="lineIndicator offline">&nbsp;</span></div>
                 <span class="onlineCount">&nbsp;</span>
             </div>
             <div class="panel-body">
               <ul class="media-list scroll-y" id="onlineList"></ul>
             </div>
-            <div class="panel-footer noselect" style="cursor:pointer;" id="notifications-panel">
-                <div class="pull-right"><span class="glyphicon glyphicon-bell bell bell-offline"></span></div>
+            <div class="panel-footer noselect" style=" cursor: pointer; " id="notifications-panel">
+                <div class="pull-left"><span class="glyphicon glyphicon-bell bell bell-offline"></span></div>
                 <span id="notifications-status">Включить уведомления</span>
             </div>
           </div>

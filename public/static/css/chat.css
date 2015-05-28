@@ -43,6 +43,10 @@ a:active {
   padding: 10px 15px;
 }
 
+#head-logo {  }
+#head-logo img { border-radius: 3px; width: 30px; height: 30px; margin-top: -4px; margin-left: -3px; box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.1); }
+#head-logo b { margin-left: 10px; font-weight: normal; }
+
 #chatWindow .media-left,
 #onlineList .media-left {
   padding-right: 7px;
@@ -79,7 +83,7 @@ a:active {
 }
 
 #chatWindow .media .media-body {
-  line-height: 18px;
+  line-height: 20px;
   padding-top: 3px;
   word-wrap: break-word;
   word-break: break-word;
@@ -100,8 +104,9 @@ a:active {
 }
 
 #chatWindow .media .media-object {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
+  margin-top: 3px;
 }
 
 #chatWindow .typing .media-body {
@@ -141,20 +146,33 @@ a:active {
     outline: none;
 }
 
+#notifications-panel .pull-left { margin-left: 4px; }
+#notifications-panel #notifications-status { margin-left: 11px; }
+
+#online-panel .pull-left { margin-left: 4px; }
+#online-panel .onlineCount { margin-left: 11px; }
+
+#users-panel .media-object {
+  width: 20px;
+  height: 20px;
+}
+
 .larger #chatWindow .media-body {
     font-size: 16px;
-    line-height: 22px;
+    line-height: 24px;
     padding-top: 4px;
 }
 
 .larger #chatWindow .message .media-object {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
 }
 
 .larger #chatWindow .media .timestamp {
   font-size: 14px;
-  line-height: 30px;
+  line-height: 28px;
+  position: relative;
+  top: 2px;
 }
 
 /* ------------------------------------------------------ */
