@@ -60,8 +60,10 @@ function postAuthenticate(socket, data) {
   if (data.username == undefined || data.username.trim().length == 0) {
     userData.username = userData.name;
   } else {
-    userData.username = data.username.slice(0, 40);
+    userData.username = data.username;
   }
+
+  userData.username = userData.username.trim().slice(0, 40).replace(/[\u202e\u034f\u200f\u202a\u202b\u202c\u202d\u202e\u2060\uFEFF]/g, '');
 
   socket.user = userData;
 }
@@ -134,6 +136,10 @@ io.on('connection', function(socket) {
       return false;
     }
 
+    if (data.text.trim().length == 0) {
+      return false;
+    }
+
     // if message starts with '/' — we're not sending it to everyone, we're processing it in unique way
     if (command.isCommand(data.text)) {
       if (data.text === '/shrug') {
@@ -152,12 +158,12 @@ io.on('connection', function(socket) {
       if (endBan > timestamp) {
         var mc = Math.ceil((endBan - timestamp) / 60);
 
-        min = ' ещё на ' + mc + languanize(mc, [' минуту', ' минуты', ' минут']);
+        min = ' ещё ' + mc + languanize(mc, [' минуту', ' минуты', ' минут']);
       }
 
       socket.emit('command response', {
         command: 'new message',
-        response: 'Вы заблокированы' + min
+        response: 'Вы не можете отправлять сообщения' + min
       });
 
       return false;
@@ -195,7 +201,7 @@ io.on('connection', function(socket) {
     var message = {
       id: messageId,
       user: rooms[socket.room].users[socket.user.id],
-      message: helper.escapeHTML(data.text),
+      message: helper.escapeHTML(data.text.trim().slice(0, 10000).replace(/[\u202e\u034f\u200f\u202a\u202b\u202c\u202d\u202e\u2060\uFEFF]/g, '')),
       timestamp: timestamp,
       mentions: mentions
     };

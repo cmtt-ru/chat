@@ -70,6 +70,12 @@ a:active {
   position: relative;
   overflow-y: auto;
   margin: 0;
+  padding: 10px 0;
+}
+
+#chatWindow li {
+  padding: 6px 15px;
+  margin-top: 0;
 }
 
 #chatWindow .message .timestamp {
@@ -78,7 +84,7 @@ a:active {
   line-height: 24px;
 }
 
-#chatWindow .message.reply .media-body {
+#chatWindow .message.reply {
   background-color: #f3f3f3;
 }
 
@@ -116,20 +122,18 @@ a:active {
 #chatWindow li.log {
   color: #aaa;
   text-align: center;
-  margin-top: 15px;
   overflow: hidden;
   zoom: 1;
 }
 
 #chatWindow li.command-response {
   color: #aaa;
-  margin-top: 15px;
   overflow: hidden;
   zoom: 1;
 }
 
 #chatWindow li:last-of-type {
-  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 #messageInput {
@@ -146,8 +150,8 @@ a:active {
     outline: none;
 }
 
-#notifications-panel .pull-left { margin-left: 4px; }
-#notifications-panel #notifications-status { margin-left: 11px; }
+#notifications-panel .pull-left { margin-left: 3px; margin-top: 1px; }
+#notifications-panel #notifications-status { margin-left: 10px; }
 
 #online-panel .pull-left { margin-left: 4px; }
 #online-panel .onlineCount { margin-left: 11px; }
@@ -158,9 +162,8 @@ a:active {
 }
 
 .larger #chatWindow .media-body {
-    font-size: 16px;
-    line-height: 24px;
-    padding-top: 4px;
+  font-size: 16px;
+  line-height: 24px;
 }
 
 .larger #chatWindow .message .media-object {
@@ -173,6 +176,11 @@ a:active {
   line-height: 28px;
   position: relative;
   top: 2px;
+}
+
+.larger #chatWindow li.log {
+  font-size: 16px;
+  line-height: 24px;
 }
 
 /* ------------------------------------------------------ */

@@ -79,6 +79,7 @@ $(function() {
 
   function changeFont() {
     $('body').toggleClass('larger');
+    $('#chatWindow')[0].scrollTop = $('#chatWindow')[0].scrollHeight;
 
     if (ls) {
       localStorage.setItem('fontSizeLarger', $('body').hasClass('larger'));
@@ -200,7 +201,7 @@ $(function() {
       if (data.mentions.length > 0) {
         data.mentions.forEach(function(mention) {
           if (mention.isReply === true && mention.name.length > 0 && text.indexOf(mention.name) >= 0) {
-            var regexName = new RegExp('^([^|]*)(' + mention.name.replace('/', '\/') + ')([^\\]]*)$');
+            var regexName = new RegExp('^([^|]*)(' + mention.name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + ')([^\\]]*)$');
             text = text.replace(regexName, '$1<a href="http://tjournal.ru/users/'+mention.id+'" target="_blank">$2</a>$3');
           }
         });
