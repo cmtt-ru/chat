@@ -300,6 +300,9 @@ $(function() {
         // Something to do
       };
 
+      // Close after 4 seconds
+      setTimeout(instance.close.bind(instance), 4000);
+
       return false;
     } else if (notificationsStatus && Notification.permission !== 'granted') {
       $notificationsStatus.text('Одобрите показ уведомлений');
