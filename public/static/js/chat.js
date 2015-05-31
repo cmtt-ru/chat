@@ -49,6 +49,7 @@ $(function() {
   var lastMentionName = '';
   var lastMentionId = 0;
 
+  var $notificationsPanel = $('#notifications-panel');
   var $notificationsStatus = $('#notifications-status');
 
   $(window).resize(function() {
@@ -315,7 +316,7 @@ $(function() {
 
   function requestNotificationsPermission(callback) {
     if (!("Notification" in window)) {
-      $notificationsStatus.text('Браузер не поддерживает уведомления');
+      $notificationsPanel.hide();
       return;
     }
 
