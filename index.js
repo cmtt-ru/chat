@@ -259,6 +259,7 @@ io.on('connection', function(socket) {
 
     socket.emit('login', {
       numUsers: rooms[room].getUsersCount(),
+      user: socket.user,
       users: rooms[room].getUsers()
     });
 
