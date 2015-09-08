@@ -112,7 +112,7 @@ var userBannedInit = function(userId) {
 }
 
 var isUserBanned = function(userId) {
-  if (ban[userId] === false) {
+  if (ban[userId] === false && userId > 0) {
     return false;
   }
 
