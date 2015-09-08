@@ -502,7 +502,10 @@ $(function() {
       connected = true;
       changeStatus(1);
 
-      $('.onLoginSetUserPic').attr('src', data.user.image);
+      if (data.user.id > 0) {
+        $('.onLoginSetUserPic').attr('src', data.user.image);
+        $('.login-button').remove();
+      }
 
       log('Вы вошли в чат!');
       updateOnlineList(data);
