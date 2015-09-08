@@ -502,6 +502,8 @@ $(function() {
       connected = true;
       changeStatus(1);
 
+      $('.onLoginSetUserPic').attr('src', data.user.image);
+
       log('Вы вошли в чат!');
       updateOnlineList(data);
     });
