@@ -508,6 +508,7 @@ $(function() {
 
       log('Вы вошли в чат!');
       updateOnlineList(data);
+      parent.postMessage("success", "https://tjournal.ru");
     });
 
     // message
