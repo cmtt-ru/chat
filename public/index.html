@@ -4,17 +4,46 @@
   <meta charset="UTF-8">
   <title>Чат TJ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
+  <!--
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
   <link rel="stylesheet" href="/static/css/chat.css">
+  -->
+
+  <style>
+  body { font-family: Arial, sans-serif; font-size: 14px; margin: 0; padding: 0; }
+  .col-sm-3 { display: none; }
+  .w-main-panel .panel-heading { font-size: 20px; color: #5cc0ff; padding: 14px 22px; border-bottom: 1px solid #e5e5e5; box-shadow: 0 3px 0 rgba(0, 0, 0, 0.03); }
+  .w-main-panel .panel-heading b { }
+  .w-main-panel .panel-heading .pull-right { display: none }
+  .w-main-panel .panel-heading .pull-left img { display: none; }
+  .w-main-panel .panel-body { height: 200px; overflow-y: scroll; }
+  .w-main-panel .panel-body ul { padding: 0; margin: 0; list-style: none; }
+  .w-main-panel .panel-body ul li { position: relative; padding: 10px 10px 0 64px; font-size: 14px; line-height: 20px; min-height: 36px; }
+  .w-main-panel .panel-body ul li.log { display: none; }
+  .w-main-panel .panel-body ul li img { position: absolute; top: 12px; left: 16px; width: 36px; height: 36px; border-radius: 100px; margin: 0; }
+  .w-main-panel .panel-body ul li a { color: #5cc0ff; text-decoration: none; border: 0; }
+  .w-main-panel .panel-body ul li .media-user-name { font-weight: bold; }
+  .w-main-panel .panel-body ul li p { display: inline; }
+  .w-main-panel .panel-body ul li .timestamp { display: none; }
+  .w-main-panel .panel-body ul li:first-child { padding-top: 16px; }
+  .w-main-panel .panel-body ul li:first-child img { top: 18px; }
+  .w-main-panel .panel-footer { padding: 15px 0; position: relative; border-top: 1px solid #eee; position: fixed; bottom: 0; width: 100%; }
+  .w-main-panel .panel-footer form {  }
+  .w-main-panel .panel-footer img { width: 24px; height: 24px; position: absolute; top: 14px; left: 19px; border-radius: 100px; margin: 0;  }
+  .w-main-panel .panel-footer input { border: 0; font-size: 14px; outline: none; width: 230px; margin: 0 64px; }
+  .w-main-panel .panel-footer button { outline: none; position: absolute; top: 10px; right: 10px; color: #818181; border: 0; width: 36px; height: 36px; background: #fff; border-radius: 100px; line-height: 36px; text-align: center; }
+  .w-main-panel .panel-footer button:hover { background: #f6f6f6; }
+  .w-main-panel .panel-footer button b { display: none; }
+  </style>
+
 </head>
 <body>
   <div class="container-fluid">
     <div class="row row-full-height">
       <div class="row-same-height row-full-height">
         <div class="col-sm-9 col-xs-height col-full-height">
-          <div class="panel panel-default baseHeight">
+          <div class="panel panel-default baseHeight w-main-panel">
             <div class="panel-heading" style="height: 41px;">
               <div class="pull-left" id="head-logo"><img src="//tjournal.ru/static/main/img/logo-colored.png" /><b>Чат TJ</b></div>
               <div class="pull-right visible-xs"><span class="onlineCount">&nbsp;</span></div>
@@ -29,9 +58,10 @@
             <div class="panel-footer">
               <div class="form-group" style="margin-bottom: 0;">
                 <div class="input-group">
-                  <input type="text" class="form-control" id="messageInput" placeholder="Здесь могло быть ваше сообщение..." autocomplete="off">
+                  <img class="media-object img-circle" src="">
+                  <input type="text" class="form-control" id="messageInput" placeholder="Текст сообщения" autocomplete="off">
                   <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" id="messageSubmitButton">Отправить</button>
+                    <button class="btn btn-primary" type="button" id="messageSubmitButton"><b>Отправить</b><i class="icon-right"></i></button>
                   </span>
                 </div>
               </div>
