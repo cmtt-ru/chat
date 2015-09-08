@@ -34,7 +34,10 @@
   .w-main-panel .panel-footer input { border: 0; font-size: 14px; outline: none; width: 230px; margin: 0 64px; }
   .w-main-panel .panel-footer button { outline: none; position: absolute; top: 10px; right: 10px; color: #818181; border: 0; width: 36px; height: 36px; background: #fff; border-radius: 100px; line-height: 36px; text-align: center; }
   .w-main-panel .panel-footer button:hover { background: #f6f6f6; }
-  .w-main-panel .panel-footer button b { display: none; }
+  .w-main-panel .panel-footer button b { text-indent: -9000px; width: 16px; height: 16px; display: block; background-size: 16px 16px;
+	background-image: url('data:image/jpg;base64,/9j/4AAQSkZJRgABAgAAZABkAAD/7AARRHVja3kAAQAEAAAASwAA/+4ADkFkb2JlAGTAAAAAAf/bAIQAAwICAgICAwICAwUDAwMFBQQDAwQFBgUFBQUFBggGBwcHBwYICAkKCgoJCAwMDAwMDA4ODg4OEBAQEBAQEBAQEAEDBAQGBgYMCAgMEg4MDhIUEBAQEBQREBAQEBARERAQEBAQEBEQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ/8AAEQgAIAAgAwERAAIRAQMRAf/EAGUAAQEBAQAAAAAAAAAAAAAAAAkHBggBAQAAAAAAAAAAAAAAAAAAAAAQAAEDAgQEBQUBAAAAAAAAAAECAwQFBgARBwkhEiIjMUFCEwgyMxQ0FxURAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AFTwB8bxbGvjmjdEe09U/wDz1l2QdQ009Sg+Sr20wzJCOoxQSvm9POU8/owET239yJdqLpnx/wDkJVCqhqKIto3hMczNPJ6W4c1xR/X8mnSe19Ku3kWwXIEKAUk5g8QR4EYA9L83mdH7PvOt2nAsStVVqjTJEA1H34sdL64zhaWtLaipQSVJPLnxy8QDwwGbnb1+j1ThSKbUtLatLiS21sSor8qE40804koWhaFpKVJUkkEEZEYAw9bq5pJc2odRuHRWhzrZtqoH8hq3qk62+YLyyS40y62TzM+aArqSOnM5ZkO/NtfcakW3IpHx015qCnqO8pqBZd1SFFa4K1kIagy1HMlgkhLTh+1wSrt5FsLHfezLpBeF51u64N+VqltVmZIn/wCf7ESQGFyXFOqQhxQQopClEJ5hnl4knjgM3O2UNH6ZCkVKpap1WJEiNrflSn4sJtppptJUta1qUEpSlIJJJyAwBia3UPSS2dQ6jb2itcnXNbVPP47Vw1FptgznkEhx1hpscGfJBV1KHVkM8sB35trbc0m4pNH+Ruu8BcekR1tT7JtZ8FDk1xBDjM+Wk5EMAgKabP3eCldvIOAuGAPjeLka+NaN0RnT1L/89edkDUNdPSovgp9tUMSSjqEUnn5vTzhPP6MBE9t/bdXdi6Z8gPkJSymhpKJVo2fMbyNQI6m5k1tQ/X82miO79Su3kHAXIAJASkZAcAB4AYD/2Q==');
+   }
+
   </style>
 
 </head>
@@ -61,7 +64,7 @@
                   <img class="media-object img-circle" src="https://static38.cmtt.ru/user-userpic/be/f7/a1/bd429fbfb050a6.jpg" />
                   <input type="text" class="form-control" id="messageInput" placeholder="Текст сообщения" autocomplete="off">
                   <span class="input-group-btn">
-                    <button class="btn btn-primary" type="button" id="messageSubmitButton"><b>Отправить</b><i class="icon-right"></i></button>
+                    <button class="btn btn-primary" type="button" id="messageSubmitButton"><b>Отправить</b></button>
                   </span>
                 </div>
               </div>
