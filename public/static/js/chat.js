@@ -203,12 +203,12 @@ $(function() {
         data.mentions.forEach(function(mention) {
           if (mention.isReply === true && mention.name.length > 0 && text.indexOf(mention.name) >= 0) {
             var regexName = new RegExp('^([^|]*)(' + mention.name.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + ')([^\\]]*)$');
-            text = text.replace(regexName, '$1<a href="http://tjournal.ru/users/'+mention.id+'" target="_blank">$2</a>$3');
+            text = text.replace(regexName, '$1<a href="https://tjournal.ru/users/'+mention.id+'" target="_blank" class="c-mention">$2</a>$3');
           }
         });
       }
 
-      return text.replace(regex, '<a href="http://tjournal.ru/users/$1" target="_blank">$2</a>');
+      return text.replace(regex, '<a href="https://tjournal.ru/users/$1" target="_blank" class="c-mention">$2</a>');
     }
   }
 
