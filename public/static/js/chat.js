@@ -487,7 +487,7 @@ $(function() {
     socket.removeAllListeners('authenticated');
     socket.removeAllListeners('connect_error');
 
-    log('Соединение с чатом прервано');
+    //log('Соединение с чатом прервано');
   });
 
   socket.on('authenticated', function() {
@@ -506,7 +506,7 @@ $(function() {
         $('.onLoginSetUserPic').attr('src', data.user.image);
       }
 
-      log('Вы вошли в чат!');
+      //log('Вы вошли в чат!');
       updateOnlineList(data);
       parent.postMessage("success", "https://tjournal.ru");
     });
