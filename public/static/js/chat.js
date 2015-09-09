@@ -230,7 +230,7 @@ $(function() {
   }
 
   function addMessageElement(el) {
-    var scrolledToNewest = ($('#chatWindow').scrollTop() + $('#chatWindow').innerHeight() >= $('#chatWindow')[0].scrollHeight);
+    var scrolledToNewest = ($('#chatWindow').scrollTop() + $('#chatWindow').innerHeight() >= $('#chatWindow')[0].scrollHeight - 40);
 
     $('#chatWindow').append(el);
 
